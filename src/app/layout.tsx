@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Đặt Lịch Khám Bác Sĩ Online",
   description: "Hệ thống đặt lịch khám bác sĩ trực tuyến",
+  title: "Đặt Lịch Khám Bác Sĩ Online",
 };
 
 export default function RootLayout({
