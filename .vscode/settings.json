@@ -1,0 +1,12 @@
+{
+  "editor.wordWrap": "on",
+  "editor.wrapOnEscapedLineFeeds": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnPaste": true,
+  "editor.formatOnSave": true,
+  "editor.formatOnType": true,
+  "editor.linkedEditing": true,
+  "terminal.integrated.suggest.enabled": true,
+  "terminal.integrated.suggest.insertTrailingSpace": true,
+  "terminal.integrated.shellIntegration.environmentReporting": true
+}
