@@ -37,7 +37,8 @@
       "!**/.svelte-kit",
       "!**/wrangler.jsonc",
       "!**/.source",
-      "!**/convex/_generated"
+      "!**/convex/_generated",
+      "!**/src/components/ui"
     ]
   },
   "formatter": {
