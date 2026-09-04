@@ -1,3 +1,4 @@
+import MegaMenu from "@/components/front-end/mega-menu";
 import Navbar from "@/components/front-end/navbar";
 
 export default function FrontLayout({
@@ -8,6 +9,7 @@ export default function FrontLayout({
   return (
     <div>
       <Navbar />
+      <MegaMenu />
       <main>{children}</main>
     </div>
   );
