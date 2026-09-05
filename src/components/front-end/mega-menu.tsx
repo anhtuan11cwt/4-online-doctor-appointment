@@ -114,27 +114,27 @@ const megaMenuData = [
 
 export default function MegaMenu() {
   return (
-    <div className="hidden bg-blue-950 py-3 lg:block">
+    <div className="fixed top-[56px] right-0 left-0 z-50 hidden border-gray-200 border-b bg-white py-3 lg:block">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <NavigationMenu>
           <NavigationMenuList className="space-x-4">
             {megaMenuData.map((category) => (
               <NavigationMenuItem key={category.title}>
-                <NavigationMenuTrigger className="!bg-transparent hover:!bg-blue-900 hover:!text-white focus:!bg-blue-900 focus:!text-white data-[popup-open]:!bg-blue-900 data-[popup-open]:!text-white data-[state=open]:!bg-blue-900 data-[state=open]:!text-white data-open:!bg-blue-900 data-open:!text-white text-gray-50">
+                <NavigationMenuTrigger className="!bg-transparent hover:!bg-gray-50 hover:!text-blue-700 focus:!bg-gray-50 focus:!text-blue-700 data-[popup-open]:!bg-gray-50 data-[popup-open]:!text-blue-700 data-[state=open]:!bg-gray-50 data-[state=open]:!text-blue-700 data-open:!bg-gray-50 data-open:!text-blue-700 text-gray-700">
                   {category.title}
                 </NavigationMenuTrigger>
-                <NavigationMenuContent className="!bg-blue-950 !border-blue-900 min-w-[400px] p-4">
+                <NavigationMenuContent className="!border-gray-200 min-w-[320px] bg-white p-4 shadow-lg">
                   <div className="grid gap-3">
                     {category.services.map((service) => (
                       <div key={service.slug}>
                         <Link
-                          className="block rounded-md p-3 transition-colors hover:bg-blue-900/50"
+                          className="block rounded-md p-3 transition-colors hover:bg-gray-50"
                           href={`/services/${service.slug}`}
                         >
-                          <div className="font-medium text-gray-50 text-sm">
+                          <div className="font-medium text-gray-900 text-sm">
                             {service.title}
                           </div>
-                          <div className="text-gray-400 text-xs">
+                          <div className="text-gray-500 text-xs">
                             {service.description}
                           </div>
                         </Link>

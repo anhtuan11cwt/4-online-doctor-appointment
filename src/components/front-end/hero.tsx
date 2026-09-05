@@ -16,7 +16,7 @@ const texts = [
 
 export default function Hero() {
   return (
-    <section className="bg-blue-950 pt-14 pb-12 sm:pt-20 sm:pb-16">
+    <section className="mt-[52px] bg-blue-950 pt-14 pb-12 sm:mt-[72px] sm:pt-20 sm:pb-16">
       <div className="mx-auto max-w-7xl px-4 text-center sm:px-6">
         <Badge
           className="mb-4 border-blue-400 bg-blue-900 text-blue-200"

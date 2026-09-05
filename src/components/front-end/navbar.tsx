@@ -78,9 +78,9 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="border-gray-400/30 border-b bg-blue-950 py-3 sm:py-4">
+    <nav className="fixed top-0 right-0 left-0 z-50 border-gray-200 border-b bg-white py-3 sm:py-4">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6">
-        <Link className="font-bold text-gray-50 text-lg sm:text-xl" href="/">
+        <Link className="font-bold text-gray-900 text-lg sm:text-xl" href="/">
           MedicalApp
         </Link>
 
@@ -89,7 +89,7 @@ export default function Navbar() {
             {navLinks.map((link) => (
               <NavigationMenuItem key={link.href}>
                 <NavigationMenuLink
-                  className={`${navigationMenuTriggerStyle()} text-gray-50 hover:bg-blue-900 hover:text-white focus:bg-blue-900 focus:text-white aria-expanded:bg-blue-900 aria-expanded:text-white data-[active=true]:bg-blue-900 data-open:bg-blue-900 data-[active=true]:text-white data-open:text-white`}
+                  className={`${navigationMenuTriggerStyle()} text-gray-700 hover:text-blue-700 focus:text-blue-700 aria-expanded:text-blue-700 data-[active=true]:text-blue-700 data-open:text-blue-700`}
                   href={link.href}
                 >
                   {link.label}
@@ -101,7 +101,7 @@ export default function Navbar() {
 
         <div className="hidden lg:block">
           <Button
-            className="rounded-md bg-blue-600 px-6 py-2.5 text-gray-50 text-sm hover:bg-blue-700"
+            className="rounded-md bg-blue-700 px-6 py-2.5 text-sm text-white hover:bg-blue-800"
             variant="default"
           >
             Đăng nhập
@@ -113,7 +113,7 @@ export default function Navbar() {
             render={
               <button
                 aria-label="Mở menu"
-                className="text-gray-50 lg:hidden"
+                className="text-gray-900 lg:hidden"
                 type="button"
               />
             }
@@ -121,7 +121,7 @@ export default function Navbar() {
             <MenuIcon className="h-6 w-6" />
           </SheetTrigger>
           <SheetContent
-            className="flex w-64 flex-col border-blue-900 bg-blue-950 sm:w-72"
+            className="flex w-64 flex-col border-gray-200 bg-white sm:w-72"
             side="left"
           >
             <div className="flex-1 pt-2">
@@ -129,30 +129,30 @@ export default function Navbar() {
                 {navLinks.map((link, index) => (
                   <div key={link.href}>
                     <Link
-                      className="block px-4 py-3 text-gray-50 text-sm transition-colors hover:text-blue-400"
+                      className="block px-4 py-3 text-gray-900 text-sm transition-colors hover:text-blue-700"
                       href={link.href}
                       onClick={() => setOpen(false)}
                     >
                       {link.label}
                     </Link>
                     {index < navLinks.length - 1 && (
-                      <Separator className="bg-gray-700" />
+                      <Separator className="bg-gray-200" />
                     )}
                   </div>
                 ))}
               </div>
 
-              <div className="mt-4 border-gray-700 border-t pt-2">
+              <div className="mt-4 border-gray-200 border-t pt-2">
                 {mobileMenuData.map((group) => (
                   <div key={group.category}>
                     <button
-                      className="flex w-full items-center justify-between px-4 py-3 text-left font-semibold text-blue-400 text-sm transition-colors hover:text-blue-300"
+                      className="flex w-full items-center justify-between px-4 py-3 text-left font-semibold text-blue-700 text-sm transition-colors hover:text-blue-800"
                       onClick={() => toggleCategory(group.category)}
                       type="button"
                     >
                       {group.category}
                       <ChevronDown
-                        className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${
+                        className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${
                           expandedCategory === group.category
                             ? "rotate-180"
                             : ""
@@ -168,7 +168,7 @@ export default function Navbar() {
                     >
                       {group.items.map((item) => (
                         <Link
-                          className="block py-2 pr-4 pl-8 text-gray-400 text-sm transition-colors hover:text-blue-400"
+                          className="block py-2 pr-4 pl-8 text-gray-500 text-sm transition-colors hover:text-blue-700"
                           href={`/services/${item.slug}`}
                           key={item.slug}
                           onClick={() => setOpen(false)}
@@ -182,9 +182,9 @@ export default function Navbar() {
               </div>
             </div>
 
-            <div className="border-gray-700 border-t px-4 pt-4 pb-6">
+            <div className="border-gray-200 border-t px-4 pt-4 pb-6">
               <Button
-                className="w-full rounded-md bg-blue-600 py-3 text-gray-50 text-sm hover:bg-blue-700"
+                className="w-full rounded-md bg-blue-700 py-3 text-sm text-white hover:bg-blue-800"
                 variant="default"
               >
                 Đăng nhập
