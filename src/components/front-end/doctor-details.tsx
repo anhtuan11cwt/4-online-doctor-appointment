@@ -1,42 +1,7 @@
 "use client";
 
 import { useState } from "react";
-
-function AvailabilityDetails() {
-  return (
-    <div className="px-4 py-4 sm:px-8 sm:py-6">
-      <h3 className="mb-3 font-semibold text-base text-gray-900 sm:mb-4 sm:text-lg">
-        Lịch hẹn khả dụng
-      </h3>
-      <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 sm:gap-3 md:grid-cols-5">
-        {[
-          "9:00 AM",
-          "9:15 AM",
-          "9:30 AM",
-          "9:45 AM",
-          "10:00 AM",
-          "10:15 AM",
-          "10:30 AM",
-          "10:45 AM",
-          "11:00 AM",
-          "11:15 AM",
-          "2:00 PM",
-          "2:15 PM",
-          "2:30 PM",
-          "2:45 PM",
-          "3:00 PM",
-        ].map((time) => (
-          <span
-            className="cursor-pointer rounded-md border border-gray-200 bg-blue-50 px-2 py-1.5 text-center font-medium text-blue-600 text-xs transition-colors hover:bg-blue-600 hover:text-white sm:px-3 sm:py-2 sm:text-sm"
-            key={time}
-          >
-            {time}
-          </span>
-        ))}
-      </div>
-    </div>
-  );
-}
+import Availability from "./availability";
 
 function ServiceDetails() {
   return (
@@ -108,11 +73,7 @@ export default function DoctorDetails() {
         </div>
       </div>
 
-      {isActive === "availability" ? (
-        <AvailabilityDetails />
-      ) : (
-        <ServiceDetails />
-      )}
+      {isActive === "availability" ? <Availability /> : <ServiceDetails />}
     </div>
   );
 }
