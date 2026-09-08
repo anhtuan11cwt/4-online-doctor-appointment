@@ -96,7 +96,7 @@ export default function Navbar() {
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6">
         <Link className="hidden lg:block" href="/">
           <Image
-            alt="MedicalApp Logo"
+            alt="Logo Medical App"
             className="h-auto w-44"
             height={40}
             src="/logo.svg"
@@ -120,12 +120,14 @@ export default function Navbar() {
         </NavigationMenu>
 
         <div className="hidden lg:block">
-          <Button
-            className="rounded-md bg-blue-700 px-6 py-2.5 text-sm text-white hover:bg-blue-800"
-            variant="default"
-          >
-            Đăng nhập
-          </Button>
+          <Link href="/login">
+            <Button
+              className="rounded-md bg-blue-700 px-6 py-2.5 text-sm text-white hover:bg-blue-800"
+              variant="default"
+            >
+              Đăng nhập
+            </Button>
+          </Link>
         </div>
 
         <button
@@ -215,12 +217,14 @@ export default function Navbar() {
           </div>
 
           <div className="border-gray-200 border-t px-4 pt-4 pb-6">
-            <Button
-              className="w-full rounded-md bg-blue-700 py-3 text-sm text-white hover:bg-blue-800"
-              variant="default"
-            >
-              Đăng nhập
-            </Button>
+            <Link href="/login">
+              <Button
+                className="w-full rounded-md bg-blue-700 py-3 text-sm text-white hover:bg-blue-800"
+                variant="default"
+              >
+                Đăng nhập
+              </Button>
+            </Link>
           </div>
         </div>
       </div>

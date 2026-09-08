@@ -132,6 +132,13 @@
   }
 }
 
+.linear-bg {
+  background-image: url("/bg.jpeg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+}
+
 html,
 body {
   overflow-x: hidden;
