@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -21,10 +22,10 @@ import { type RegisterSchema, registerSchema } from "@/lib/validations";
 export default function RegisterForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors },
   } = useForm<RegisterSchema>({
     resolver: zodResolver(registerSchema),
@@ -40,7 +41,7 @@ export default function RegisterForm() {
         toast.success(
           "Tạo tài khoản thành công! Vui lòng kiểm tra email để xác thực.",
         );
-        reset();
+        router.push(`/verify-account/${result.data?.id}`);
       }
     } catch {
       toast.error("Đã có lỗi xảy ra, vui lòng thử lại sau");

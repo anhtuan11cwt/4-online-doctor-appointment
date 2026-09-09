@@ -51,6 +51,33 @@ function getVerificationEmailHtml(firstName: string, token: string): string {
   `;
 }
 
+export async function getUserById(id: string) {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id },
+    });
+
+    return user;
+  } catch (error) {
+    console.error("Lỗi lấy thông tin người dùng:", error);
+    return null;
+  }
+}
+
+export async function updateUserById(id: string) {
+  try {
+    const updatedUser = await prisma.user.update({
+      data: { isVerified: true },
+      where: { id },
+    });
+
+    return updatedUser;
+  } catch (error) {
+    console.error("Lỗi cập nhật người dùng:", error);
+    return null;
+  }
+}
+
 export async function createUser(data: unknown) {
   try {
     const validated = registerSchema.safeParse(data);

@@ -1,10 +1,13 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { AlertCircle, Eye, EyeOff, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import {
   Field,
@@ -18,6 +21,8 @@ import { type LoginSchema, loginSchema } from "@/lib/validations";
 export default function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showNotification, setShowNotification] = useState(false);
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -28,8 +33,28 @@ export default function LoginForm() {
 
   const onSubmit = async (data: LoginSchema) => {
     setIsLoading(true);
-    console.log(data);
-    setIsLoading(false);
+    setShowNotification(false);
+
+    try {
+      const result = await signIn("credentials", {
+        email: data.email,
+        password: data.password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        setIsLoading(false);
+        setShowNotification(true);
+        toast.error("Đăng nhập thất bại, vui lòng kiểm tra lại thông tin");
+      } else {
+        setShowNotification(false);
+        toast.success("Đăng nhập thành công!");
+        router.push("/dashboard");
+      }
+    } catch {
+      setIsLoading(false);
+      toast.error("Đã có lỗi xảy ra");
+    }
   };
 
   return (
@@ -41,6 +66,14 @@ export default function LoginForm() {
             Nhập email và mật khẩu bên dưới để đăng nhập
           </p>
         </div>
+
+        {showNotification && (
+          <div className="flex w-full items-center gap-2 rounded-md border border-destructive/50 bg-destructive/10 p-3 text-destructive text-sm">
+            <AlertCircle className="size-4 shrink-0" />
+            <span>Đăng nhập thất bại, vui lòng kiểm tra lại thông tin</span>
+          </div>
+        )}
+
         <Field>
           <FieldLabel htmlFor="email">Email</FieldLabel>
           <Input
@@ -95,7 +128,9 @@ export default function LoginForm() {
           </Button>
         </Field>
         <Field>
-          <p className="text-center text-muted-foreground text-sm">
+          <p
+            className={`text-center text-muted-foreground text-sm ${isLoading ? "opacity-50" : ""}`}
+          >
             Chưa có tài khoản?{" "}
             <Link
               className={`font-medium text-primary underline-offset-4 hover:underline ${isLoading ? "pointer-events-none" : ""}`}
