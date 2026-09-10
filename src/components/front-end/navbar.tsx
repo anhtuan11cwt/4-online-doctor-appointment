@@ -18,6 +18,7 @@ const navLinks = [
   { href: "/", label: "Trang chủ" },
   { href: "/doctors", label: "Bác sĩ" },
   { href: "/services", label: "Dịch vụ" },
+  { href: "/join/doctors", label: "Liên kết dịch vụ" },
   { href: "/about", label: "Giới thiệu" },
   { href: "/contact", label: "Liên hệ" },
 ];
@@ -58,6 +59,10 @@ const mobileMenuData = [
       { slug: "dau-dai-dang", title: "Đau dai dẳng" },
       { slug: "roi-luan-giac-ngu", title: "Mất ngủ" },
     ],
+  },
+  {
+    category: "Dành cho Bác sĩ",
+    items: [{ slug: "/join/doctors", title: "Liên kết dịch vụ" }],
   },
 ];
 
@@ -203,7 +208,11 @@ export default function Navbar() {
                     {group.items.map((item) => (
                       <Link
                         className="block py-2 pr-4 pl-8 text-gray-500 text-sm transition-colors hover:text-blue-700"
-                        href={`/services/${item.slug}`}
+                        href={
+                          item.slug.startsWith("/")
+                            ? item.slug
+                            : `/services/${item.slug}`
+                        }
                         key={item.slug}
                         onClick={() => setOpen(false)}
                       >

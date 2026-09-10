@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import Footer from "@/components/front-end/footer";
 import MegaMenu from "@/components/front-end/mega-menu";
 import Navbar from "@/components/front-end/navbar";
 
@@ -13,10 +14,11 @@ export default function FrontLayout({
   const isAuthPage = pathname === "/login" || pathname === "/register";
 
   return (
-    <div>
+    <div className="flex min-h-screen flex-col">
       <Navbar />
       {!isAuthPage && <MegaMenu />}
-      <main>{children}</main>
+      <main className="flex-1">{children}</main>
+      <Footer />
     </div>
   );
 }
