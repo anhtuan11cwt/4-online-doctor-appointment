@@ -17,7 +17,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html className={cn("font-sans", inter.variable)} lang="vi">
+    <html
+      className={cn("font-sans", inter.variable)}
+      lang="vi"
+      suppressHydrationWarning
+    >
       <body>
         <Providers>{children}</Providers>
       </body>

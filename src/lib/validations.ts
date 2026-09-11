@@ -80,5 +80,30 @@ export const registerSchema = z.object({
   phone: phoneValidation,
 });
 
+export const settingsSchema = z.object({
+  email: z.string().min(1, "Email là bắt buộc").email("Email không hợp lệ"),
+  name: z
+    .string()
+    .trim()
+    .min(1, "Tên là bắt buộc")
+    .min(2, "Tên phải có ít nhất 2 ký tự")
+    .max(100, "Tên không được vượt quá 100 ký tự")
+    .regex(
+      /^[a-zA-ZÀ-ỹ]+(?: [a-zA-ZÀ-ỹ]+)*$/,
+      "Tên chỉ được chứa chữ cái và khoảng trắng giữa các từ",
+    )
+    .refine((val) => !/[0-9]/.test(val), "Tên không được chứa số")
+    .refine(
+      (val) => !/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~]/.test(val),
+      "Tên không được chứa ký tự đặc biệt",
+    )
+    .refine(
+      (val) => !/(.)\1{2,}/.test(val),
+      "Tên không được chứa 3 ký tự liên tiếp giống nhau",
+    ),
+  phone: phoneValidation,
+});
+
 export type LoginSchema = z.infer<typeof loginSchema>;
 export type RegisterSchema = z.infer<typeof registerSchema>;
+export type SettingsSchema = z.infer<typeof settingsSchema>;
