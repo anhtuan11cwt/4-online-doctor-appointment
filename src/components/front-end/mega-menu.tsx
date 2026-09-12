@@ -114,27 +114,27 @@ const megaMenuData = [
 
 export default function MegaMenu() {
   return (
-    <div className="fixed top-[56px] right-0 left-0 z-50 hidden border-gray-200 border-b bg-white py-3 lg:block">
+    <div className="fixed top-[56px] right-0 left-0 z-50 hidden border-b bg-background py-3 lg:block">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <NavigationMenu>
           <NavigationMenuList className="space-x-4">
             {megaMenuData.map((category) => (
               <NavigationMenuItem key={category.title}>
-                <NavigationMenuTrigger className="!bg-transparent hover:!bg-gray-50 hover:!text-blue-700 focus:!bg-gray-50 focus:!text-blue-700 data-[popup-open]:!bg-gray-50 data-[popup-open]:!text-blue-700 data-[state=open]:!bg-gray-50 data-[state=open]:!text-blue-700 data-open:!bg-gray-50 data-open:!text-blue-700 text-gray-700">
+                <NavigationMenuTrigger className="!bg-transparent hover:!bg-accent hover:!text-blue-700 focus:!bg-accent focus:!text-blue-700 data-[popup-open]:!bg-accent data-[popup-open]:!text-blue-700 data-[state=open]:!bg-accent data-[state=open]:!text-blue-700 data-open:!bg-accent data-open:!text-blue-700 text-muted-foreground">
                   {category.title}
                 </NavigationMenuTrigger>
-                <NavigationMenuContent className="!border-gray-200 min-w-[320px] bg-white p-4 shadow-lg">
+                <NavigationMenuContent className="min-w-[320px] border bg-popover p-4 shadow-lg">
                   <div className="grid gap-3">
                     {category.services.map((service) => (
                       <div key={service.slug}>
                         <Link
-                          className="block rounded-md p-3 transition-colors hover:bg-gray-50"
+                          className="block rounded-md p-3 transition-colors hover:bg-accent"
                           href={`/services/${service.slug}`}
                         >
-                          <div className="font-medium text-gray-900 text-sm">
+                          <div className="font-medium text-foreground text-sm">
                             {service.title}
                           </div>
-                          <div className="text-gray-500 text-xs">
+                          <div className="text-muted-foreground text-xs">
                             {service.description}
                           </div>
                         </Link>

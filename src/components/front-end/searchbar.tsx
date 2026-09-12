@@ -8,9 +8,9 @@ export default function SearchBar() {
   return (
     <form className="flex w-full flex-col gap-3 sm:flex-row sm:items-center">
       <div className="relative flex-1">
-        <SearchIcon className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+        <SearchIcon className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
         <Input
-          className="h-12 rounded-full border-gray-300 pr-4 pl-10 text-base"
+          className="h-12 rounded-full border-gray-300 bg-white/10 pr-4 pl-10 text-base text-white placeholder:text-gray-400"
           placeholder="Tìm kiếm bác sĩ, chuyên khoa..."
           type="text"
         />

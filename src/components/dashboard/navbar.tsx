@@ -1,11 +1,11 @@
 "use client";
 
-import { ChevronDown, LogOut } from "lucide-react";
-import Image from "next/image";
+import { ChevronDown, LogOut, Settings } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
 import { ModeToggle } from "@/components/mode-toggle";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,6 +19,7 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 
 export default function DashboardNavbar() {
   const { data: session } = useSession();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -43,6 +44,18 @@ export default function DashboardNavbar() {
   const user = session?.user;
   const userName = user?.name || "Admin";
   const userEmail = user?.email || "admin@example.com";
+  const userImage = user?.image || null;
+  const initials = userName
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+
+  const handleLogout = async () => {
+    await signOut();
+    router.push("/login");
+  };
 
   return (
     <header className="sticky top-0 z-50 flex h-14 items-center gap-2 border-b bg-background px-4 sm:h-16 sm:px-6">
@@ -55,38 +68,37 @@ export default function DashboardNavbar() {
           <DropdownMenuTrigger
             render={
               <button
-                className="flex items-center gap-2 rounded-md p-1.5 transition-colors hover:bg-accent sm:gap-3"
+                className="flex cursor-pointer items-center gap-2 rounded-md p-1.5 transition-colors hover:bg-accent sm:gap-3"
                 type="button"
               />
             }
           >
-            <Image
-              alt="Avatar"
-              className="h-8 w-8 rounded-full object-cover sm:h-9 sm:w-9"
-              height={100}
-              src="/doc1.png"
-              width={100}
-            />
+            <Avatar size="sm">
+              {userImage && <AvatarImage alt={userName} src={userImage} />}
+              <AvatarFallback>{initials}</AvatarFallback>
+            </Avatar>
             <div className="hidden text-left md:block">
               <p className="font-medium text-sm">{userName}</p>
               <p className="text-muted-foreground text-xs">{userEmail}</p>
             </div>
             <ChevronDown className="h-4 w-4 text-muted-foreground" />
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48">
+          <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuGroup>
-              <DropdownMenuLabel>
+              <DropdownMenuLabel className="text-center">
                 <p className="font-medium text-sm">{userName}</p>
-                <p className="text-muted-foreground text-xs">{userEmail}</p>
+                <p className="font-light text-slate-500 text-xs">{userEmail}</p>
               </DropdownMenuLabel>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              onClick={() => {
-                toast.success("Đăng xuất thành công!");
-                signOut({ callbackUrl: "/login" });
-              }}
+              onClick={() => router.push("/dashboard/settings")}
             >
+              <Settings className="mr-2 size-4" />
+              Cài đặt
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleLogout}>
               <LogOut className="mr-2 size-4" />
               Đăng xuất
             </DropdownMenuItem>

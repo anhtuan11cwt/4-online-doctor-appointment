@@ -4,6 +4,7 @@ import { ChevronDown, MenuIcon, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { ModeToggle } from "@/components/mode-toggle";
 import { Button } from "@/components/ui/button";
 import {
   NavigationMenu,
@@ -97,7 +98,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="fixed top-0 right-0 left-0 z-50 border-gray-200 border-b bg-white py-2.5">
+    <nav className="fixed top-0 right-0 left-0 z-50 border-b bg-background py-2.5">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-8">
         <Link className="hidden lg:block" href="/">
           <Image
@@ -114,7 +115,7 @@ export default function Navbar() {
             {navLinks.map((link) => (
               <NavigationMenuItem key={link.href}>
                 <NavigationMenuLink
-                  className={`${navigationMenuTriggerStyle()} text-gray-700 hover:text-blue-700 focus:text-blue-700 aria-expanded:text-blue-700 data-[active=true]:text-blue-700 data-open:text-blue-700`}
+                  className={`${navigationMenuTriggerStyle()} text-muted-foreground hover:text-foreground focus:text-foreground aria-expanded:text-foreground data-[active=true]:text-foreground data-open:text-foreground`}
                   href={link.href}
                 >
                   {link.label}
@@ -124,7 +125,8 @@ export default function Navbar() {
           </NavigationMenuList>
         </NavigationMenu>
 
-        <div className="hidden lg:block">
+        <div className="hidden items-center gap-2 lg:flex">
+          <ModeToggle />
           <Link href="/login">
             <Button
               className="rounded-md bg-blue-700 px-6 py-2 text-sm text-white hover:bg-blue-800"
@@ -135,14 +137,21 @@ export default function Navbar() {
           </Link>
         </div>
 
-        <button
-          aria-label={open ? "Đóng menu" : "Mở menu"}
-          className="text-gray-900 lg:hidden"
-          onClick={() => setOpen(!open)}
-          type="button"
-        >
-          {open ? <X className="h-6 w-6" /> : <MenuIcon className="h-6 w-6" />}
-        </button>
+        <div className="flex items-center gap-2 lg:hidden">
+          <ModeToggle />
+          <button
+            aria-label={open ? "Đóng menu" : "Mở menu"}
+            className="text-foreground"
+            onClick={() => setOpen(!open)}
+            type="button"
+          >
+            {open ? (
+              <X className="h-6 w-6" />
+            ) : (
+              <MenuIcon className="h-6 w-6" />
+            )}
+          </button>
+        </div>
       </div>
 
       {/* Mobile menu overlay */}
@@ -160,7 +169,7 @@ export default function Navbar() {
 
       {/* Mobile menu panel */}
       <div
-        className={`fixed top-0 left-0 z-50 h-dvh w-72 overflow-y-auto border-gray-200 border-r bg-white transition-transform duration-300 lg:hidden ${
+        className={`fixed top-0 left-0 z-50 h-dvh w-72 overflow-y-auto border-r bg-background transition-transform duration-300 lg:hidden ${
           open ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -170,20 +179,18 @@ export default function Navbar() {
               {navLinks.map((link, index) => (
                 <div key={link.href}>
                   <Link
-                    className="block px-4 py-3 text-gray-900 text-sm transition-colors hover:text-blue-700"
+                    className="block px-4 py-3 text-foreground text-sm transition-colors hover:text-blue-700"
                     href={link.href}
                     onClick={() => setOpen(false)}
                   >
                     {link.label}
                   </Link>
-                  {index < navLinks.length - 1 && (
-                    <Separator className="bg-gray-200" />
-                  )}
+                  {index < navLinks.length - 1 && <Separator />}
                 </div>
               ))}
             </div>
 
-            <div className="mt-4 border-gray-200 border-t pt-2">
+            <div className="mt-4 border-t pt-2">
               {mobileMenuData.map((group) => (
                 <div key={group.category}>
                   <button
@@ -193,7 +200,7 @@ export default function Navbar() {
                   >
                     {group.category}
                     <ChevronDown
-                      className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${
+                      className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${
                         expandedCategory === group.category ? "rotate-180" : ""
                       }`}
                     />
@@ -207,7 +214,7 @@ export default function Navbar() {
                   >
                     {group.items.map((item) => (
                       <Link
-                        className="block py-2 pr-4 pl-8 text-gray-500 text-sm transition-colors hover:text-blue-700"
+                        className="block py-2 pr-4 pl-8 text-muted-foreground text-sm transition-colors hover:text-blue-700"
                         href={
                           item.slug.startsWith("/")
                             ? item.slug
@@ -225,7 +232,7 @@ export default function Navbar() {
             </div>
           </div>
 
-          <div className="border-gray-200 border-t px-4 pt-4 pb-6">
+          <div className="border-t px-4 pt-4 pb-6">
             <Link href="/login">
               <Button
                 className="w-full rounded-md bg-blue-700 py-3 text-sm text-white hover:bg-blue-800"
