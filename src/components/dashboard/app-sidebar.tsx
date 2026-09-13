@@ -2,6 +2,7 @@
 
 import {
   CalendarDays,
+  Globe,
   LayoutDashboard,
   LogOut,
   Settings,
@@ -53,6 +54,11 @@ const sidebarLinks = [
     icon: Settings,
     name: "Cài đặt",
     path: "/dashboard/settings",
+  },
+  {
+    icon: Globe,
+    name: "Trang chủ",
+    path: "/",
   },
 ];
 

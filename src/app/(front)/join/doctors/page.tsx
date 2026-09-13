@@ -65,21 +65,20 @@ const faqs: FAQItem[] = [
 
 export default function JoinDoctorsPage() {
   return (
-    <div className="min-h-screen bg-white pt-20">
+    <div className="min-h-screen bg-white pt-20 dark:bg-slate-900">
       {/* Welcome Hero Section */}
       <section className="px-4 py-16 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl">
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-12">
             {/* Left Content */}
             <div className="flex flex-col justify-center">
-              <h2 className="font-bold text-3xl text-gray-900 leading-tight sm:text-4xl lg:text-5xl">
-                Cách thuận tiện để xây dựng{" "}
+              <h1 className="font-bold text-4xl text-gray-900 leading-tight sm:text-5xl lg:text-6xl dark:text-white">
+                Xây dựng phòng khám chăm sóc trực tiếp{" "}
                 <span className="font-semibold text-blue-600">
-                  thanh toán trực tiếp
-                </span>{" "}
-                phòng khám
-              </h2>
-              <p className="mt-6 text-gray-600 text-lg leading-relaxed">
+                  với ứng dụng y tế
+                </span>
+              </h1>
+              <p className="mt-6 text-gray-600 text-lg leading-relaxed dark:text-slate-300">
                 Medical kết nối bạn với bệnh nhân, giúp bạn quản lý lịch hẹn,
                 cung cấp dịch vụ từ xa và theo dõi hồ sơ bệnh nhân tất cả ở một
                 nơi. Tham gia nền tảng của chúng tôi để phát triển phòng khám và
@@ -102,7 +101,9 @@ export default function JoinDoctorsPage() {
                       aria-hidden="true"
                       className="mr-3 h-5 w-5 flex-shrink-0 text-green-500"
                     />
-                    <span className="text-gray-700">{feature}</span>
+                    <span className="text-gray-700 dark:text-gray-300">
+                      {feature}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -124,7 +125,7 @@ export default function JoinDoctorsPage() {
       </section>
 
       {/* Onboarding Steps Section */}
-      <section className="bg-gray-50 px-4 py-16 sm:px-6 lg:px-8">
+      <section className="bg-gray-50 px-4 py-16 sm:px-6 lg:px-8 dark:bg-slate-800">
         <div className="mx-auto max-w-6xl">
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-12">
             {/* Left Content - Image */}
@@ -140,7 +141,7 @@ export default function JoinDoctorsPage() {
 
             {/* Right Content */}
             <div className="flex flex-col justify-center">
-              <h2 className="font-bold text-3xl text-gray-900 leading-tight sm:text-4xl">
+              <h2 className="font-bold text-3xl text-gray-900 leading-tight sm:text-4xl dark:text-white">
                 Tham gia Medical để tăng doanh thu ngay hôm nay
               </h2>
 
@@ -150,14 +151,16 @@ export default function JoinDoctorsPage() {
                     aria-hidden="true"
                     className="mr-3 h-5 w-5 flex-shrink-0 text-blue-600"
                   />
-                  <span className="text-gray-700">Liên kết phòng khám</span>
+                  <span className="text-gray-700 dark:text-gray-300">
+                    Liên kết phòng khám
+                  </span>
                 </div>
                 <div className="flex items-center">
                   <CheckCircle
                     aria-hidden="true"
                     className="mr-3 h-5 w-5 flex-shrink-0 text-blue-600"
                   />
-                  <span className="text-gray-700">
+                  <span className="text-gray-700 dark:text-gray-300">
                     Tạo các gói dịch vụ cạnh tranh
                   </span>
                 </div>
@@ -166,7 +169,7 @@ export default function JoinDoctorsPage() {
                     aria-hidden="true"
                     className="mr-3 h-5 w-5 flex-shrink-0 text-blue-600"
                   />
-                  <span className="text-gray-700">
+                  <span className="text-gray-700 dark:text-gray-300">
                     Bắt đầu tiếp nhận bệnh nhân
                   </span>
                 </div>
@@ -181,11 +184,11 @@ export default function JoinDoctorsPage() {
         <div className="mx-auto max-w-6xl">
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {/* Card 1 */}
-            <div className="flex flex-col rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md">
-              <h3 className="font-semibold text-gray-900 text-lg">
+            <div className="flex flex-col rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md dark:border-gray-700 dark:bg-slate-800">
+              <h3 className="font-semibold text-gray-900 text-lg dark:text-white">
                 Bắt đầu hành trình
               </h3>
-              <p className="mt-2 flex-1 text-gray-600 text-sm">
+              <p className="mt-2 flex-1 text-gray-600 text-sm dark:text-gray-400">
                 Bắt đầu đăng ký mới để tham gia nền tảng và kết nối với bệnh
                 nhân.
               </p>
@@ -199,11 +202,11 @@ export default function JoinDoctorsPage() {
             </div>
 
             {/* Card 2 */}
-            <div className="flex flex-col rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md">
-              <h3 className="font-semibold text-gray-900 text-lg">
+            <div className="flex flex-col rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md dark:border-gray-700 dark:bg-slate-800">
+              <h3 className="font-semibold text-gray-900 text-lg dark:text-white">
                 Tiếp tục đăng ký
               </h3>
-              <p className="mt-2 flex-1 text-gray-600 text-sm">
+              <p className="mt-2 flex-1 text-gray-600 text-sm dark:text-gray-400">
                 Tiếp tục từ nơi bạn đã dừng và hoàn tất đăng ký.
               </p>
               <div className="mt-4">
@@ -216,11 +219,11 @@ export default function JoinDoctorsPage() {
             </div>
 
             {/* Card 3 */}
-            <div className="flex flex-col rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md">
-              <h3 className="font-semibold text-gray-900 text-lg">
+            <div className="flex flex-col rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md dark:border-gray-700 dark:bg-slate-800">
+              <h3 className="font-semibold text-gray-900 text-lg dark:text-white">
                 Đặt lịch tư vấn
               </h3>
-              <p className="mt-2 flex-1 text-gray-600 text-sm">
+              <p className="mt-2 flex-1 text-gray-600 text-sm dark:text-gray-400">
                 Chọn thời gian để nói chuyện với đội ngũ về việc tham gia nền
                 tảng.
               </p>
@@ -234,11 +237,11 @@ export default function JoinDoctorsPage() {
             </div>
 
             {/* Card 4 */}
-            <div className="flex flex-col rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md">
-              <h3 className="font-semibold text-gray-900 text-lg">
+            <div className="flex flex-col rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md dark:border-gray-700 dark:bg-slate-800">
+              <h3 className="font-semibold text-gray-900 text-lg dark:text-white">
                 Kiểm tra tiến độ
               </h3>
-              <p className="mt-2 flex-1 text-gray-600 text-sm">
+              <p className="mt-2 flex-1 text-gray-600 text-sm dark:text-gray-400">
                 Theo dõi tiến trình đăng ký và xem bạn đang ở bước nào.
               </p>
               <div className="mt-4">
@@ -257,9 +260,9 @@ export default function JoinDoctorsPage() {
       <Pricing />
 
       {/* FAQ Section */}
-      <section className="bg-gray-50 px-4 py-16 sm:px-6 lg:px-8">
+      <section className="bg-gray-50 px-4 py-16 sm:px-6 lg:px-8 dark:bg-slate-800">
         <div className="mx-auto max-w-3xl">
-          <h2 className="mb-8 text-center font-bold text-3xl text-gray-900">
+          <h2 className="mb-8 text-center font-bold text-3xl text-gray-900 dark:text-white">
             Câu Hỏi Thường Gặp
           </h2>
           <CustomAccordion faqs={faqs} />

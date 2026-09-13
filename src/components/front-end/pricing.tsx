@@ -1,17 +1,16 @@
 "use client";
 
 import { Check, HelpCircle } from "lucide-react";
+import Link from "next/link";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import CustomButton from "./custom-button";
 
 const plans = [
   {
-    buttonStyle: "bg-gray-600 hover:bg-gray-800",
     buttonText: "Bắt đầu ngay",
     description: "Dành cho nhà cung cấp cá nhân mới bắt đầu",
     features: [
@@ -22,12 +21,12 @@ const plans = [
     ],
     mostPopular: false,
     name: "Cơ Bản",
+    path: "/register?role=doctor&plan=free",
     period: "vĩnh viễn",
     price: "$0",
     transactionFee: "5%",
   },
   {
-    buttonStyle: "bg-blue-600 hover:bg-blue-800",
     buttonText: "Dùng thử miễn phí",
     description: "Dành cho phòng khám vừa và nhỏ",
     features: [
@@ -39,12 +38,12 @@ const plans = [
     ],
     mostPopular: true,
     name: "Chuyên Nghiệp",
+    path: "/register?role=doctor&plan=professional",
     period: "mỗi tháng",
     price: "$59.9",
     transactionFee: "2%",
   },
   {
-    buttonStyle: "bg-purple-600 hover:bg-purple-800",
     buttonText: "Liên hệ bán hàng",
     description: "Dành cho tổ chức lớn và hệ thống bệnh viện",
     features: [
@@ -57,6 +56,7 @@ const plans = [
     ],
     mostPopular: false,
     name: "Doanh Nghiệp",
+    path: "/register?role=doctor&plan=enterprise",
     period: "mỗi tháng",
     price: "$99",
     transactionFee: "0%",
@@ -66,17 +66,17 @@ const plans = [
 export default function Pricing() {
   return (
     <TooltipProvider>
-      <div className="bg-gray-50 py-24 sm:py-32">
+      <div className="bg-gray-50 py-24 sm:py-32 dark:bg-slate-900">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-4xl text-center">
             <h2 className="font-semibold text-base text-blue-600 leading-7">
               Bảng Giá
             </h2>
-            <p className="mt-2 font-bold text-4xl text-gray-900 tracking-tight sm:text-5xl">
+            <p className="mt-2 font-bold text-4xl text-gray-900 tracking-tight sm:text-5xl dark:text-white">
               Chọn gói phù hợp cho phòng khám của bạn
             </p>
           </div>
-          <p className="mx-auto mt-6 max-w-2xl text-center text-gray-600 text-lg leading-8">
+          <p className="mx-auto mt-6 max-w-2xl text-center text-gray-600 text-lg leading-8 dark:text-slate-300">
             Bắt đầu miễn phí, sau đó thêm gói phù hợp với nhu cầu. Không phí ẩn.
           </p>
 
@@ -85,32 +85,32 @@ export default function Pricing() {
               <div
                 className={`flex flex-col rounded-3xl p-6 ring-1 sm:p-8 lg:p-10 ${
                   plan.mostPopular
-                    ? "bg-white shadow-xl ring-blue-600"
-                    : "bg-white ring-gray-200"
+                    ? "bg-white shadow-xl ring-blue-600 dark:bg-slate-800"
+                    : "bg-white ring-gray-200 dark:bg-slate-800 dark:ring-gray-700"
                 }`}
                 key={plan.name}
               >
                 <h3
-                  className="font-semibold text-gray-900 text-sm uppercase tracking-widest"
+                  className="font-bold text-gray-900 text-sm uppercase tracking-widest dark:text-white"
                   id={`plan-${plan.name}`}
                 >
                   {plan.name}
                 </h3>
-                <p className="mt-4 text-gray-600 text-sm leading-6">
+                <p className="mt-4 text-gray-600 text-sm leading-6 dark:text-slate-300">
                   {plan.description}
                 </p>
                 <div className="mt-6 flex items-baseline gap-x-2">
-                  <span className="font-bold text-5xl text-gray-900 tracking-tight">
+                  <span className="font-bold text-5xl text-gray-900 tracking-tight dark:text-white">
                     {plan.price}
                   </span>
-                  <span className="font-semibold text-base text-gray-600 leading-6">
+                  <span className="font-semibold text-base text-gray-600 leading-6 dark:text-gray-300">
                     /{plan.period}
                   </span>
                 </div>
 
                 {/* Transaction Fee with Tooltip */}
                 <div className="mt-4 flex items-center gap-2">
-                  <span className="text-gray-600 text-sm">
+                  <span className="text-gray-600 text-sm dark:text-gray-300">
                     Phí giao dịch: {plan.transactionFee}
                   </span>
                   <Tooltip>
@@ -126,7 +126,7 @@ export default function Pricing() {
                   </Tooltip>
                 </div>
 
-                <ul className="mt-8 flex-1 space-y-3 text-gray-600 text-sm leading-6">
+                <ul className="mt-8 flex-1 space-y-3 text-gray-600 text-sm leading-6 dark:text-gray-300">
                   {plan.features.map((feature) => (
                     <li className="flex gap-x-3" key={feature}>
                       <Check
@@ -139,11 +139,16 @@ export default function Pricing() {
                 </ul>
 
                 <div className="mt-8">
-                  <CustomButton
-                    className={`w-full ${plan.buttonStyle}`}
-                    href="#"
-                    title={plan.buttonText}
-                  />
+                  <Link
+                    className={`inline-block w-full rounded-md px-6 py-2 text-center font-semibold text-sm text-white shadow-sm transition-colors ${
+                      plan.mostPopular
+                        ? "bg-blue-600 hover:bg-blue-800"
+                        : "bg-gray-600 hover:bg-gray-800"
+                    }`}
+                    href={plan.path}
+                  >
+                    {plan.buttonText}
+                  </Link>
                 </div>
               </div>
             ))}

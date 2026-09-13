@@ -34,7 +34,7 @@ export default function DoctorCard({
   isInPerson?: boolean;
 }) {
   return (
-    <div className="group rounded-md border border-gray-200 bg-white transition-all duration-300 hover:border-gray-400">
+    <div className="group rounded-md border border-gray-200 bg-white transition-all duration-300 hover:border-gray-400 dark:border-gray-600 dark:bg-slate-700">
       <Link className="block" href={`/doctors/${doctor._id}`}>
         <div className="relative">
           <Image
@@ -59,7 +59,7 @@ export default function DoctorCard({
           </h2>
         </Link>
 
-        <div className="flex items-center gap-2 text-gray-600 text-xs sm:text-sm">
+        <div className="flex items-center gap-2 text-gray-600 text-xs sm:text-sm dark:text-gray-400">
           <Stethoscope className="h-3.5 w-3.5 flex-shrink-0 sm:h-4 sm:w-4" />
           <span>{doctor.speciality}</span>
         </div>
@@ -77,9 +77,9 @@ export default function DoctorCard({
           Khám hôm nay
         </span>
 
-        <div className="border-gray-200 border-t pt-2 sm:pt-3">
+        <div className="border-gray-200 border-t pt-2 sm:pt-3 dark:border-gray-600">
           <div className="mb-1.5 flex items-center justify-between text-xs sm:mb-2 sm:text-sm">
-            <span className="flex items-center gap-1 text-gray-500">
+            <span className="flex items-center gap-1 text-gray-500 dark:text-gray-400">
               <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
               <span className="hidden min-[360px]:inline">
                 Thứ Ba, ngày 9/9
@@ -94,7 +94,7 @@ export default function DoctorCard({
           <div className="grid grid-cols-3 gap-1 sm:gap-1.5">
             {timeStamps.slice(0, 5).map((item) => (
               <span
-                className="cursor-pointer rounded bg-blue-50 px-1 py-1 text-center font-medium text-[10px] text-blue-600 transition-colors hover:bg-blue-600 hover:text-white sm:px-2 sm:text-xs"
+                className="cursor-pointer rounded bg-blue-50 px-1 py-1 text-center font-medium text-[10px] text-blue-600 transition-colors hover:bg-blue-600 hover:text-white sm:px-2 sm:text-xs dark:text-slate-900"
                 key={`${item.time}-${item.period}`}
               >
                 {item.time}

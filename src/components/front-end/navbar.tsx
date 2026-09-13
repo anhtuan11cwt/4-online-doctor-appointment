@@ -1,11 +1,28 @@
 "use client";
 
-import { ChevronDown, MenuIcon, X } from "lucide-react";
-import Image from "next/image";
+import {
+  ChevronDown,
+  LayoutDashboard,
+  LogOut,
+  MenuIcon,
+  Microscope,
+  User,
+  X,
+} from "lucide-react";
 import Link from "next/link";
+import type { Session } from "next-auth";
+import { signOut } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { ModeToggle } from "@/components/mode-toggle";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -14,15 +31,12 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { Separator } from "@/components/ui/separator";
+import { siteConfig } from "@/config/site";
 
-const navLinks = [
-  { href: "/", label: "Trang chủ" },
-  { href: "/doctors", label: "Bác sĩ" },
-  { href: "/services", label: "Dịch vụ" },
-  { href: "/join/doctors", label: "Liên kết dịch vụ" },
-  { href: "/about", label: "Giới thiệu" },
-  { href: "/contact", label: "Liên hệ" },
-];
+const navLinks = siteConfig.mainNav.map((item) => ({
+  href: item.href,
+  label: item.title,
+}));
 
 const mobileMenuData = [
   {
@@ -67,9 +81,13 @@ const mobileMenuData = [
   },
 ];
 
-export default function Navbar() {
+export default function Navbar({ session }: { session?: Session }) {
   const [open, setOpen] = useState(false);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+
+  const handleLogout = async () => {
+    await signOut({ callbackUrl: "/" });
+  };
 
   useEffect(() => {
     const handleResize = () => {
@@ -97,17 +115,14 @@ export default function Navbar() {
     setExpandedCategory((prev) => (prev === category ? null : category));
   };
 
+  const isLoggedIn = session?.user?.email;
+
   return (
     <nav className="fixed top-0 right-0 left-0 z-50 border-b bg-background py-2.5">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-8">
-        <Link className="hidden lg:block" href="/">
-          <Image
-            alt="Logo ứng dụng y tế"
-            className="h-auto w-44"
-            height={40}
-            src="/logo.svg"
-            width={176}
-          />
+        <Link className="hidden items-center gap-2 lg:flex" href="/">
+          <Microscope className="h-6 w-6 text-blue-600" />
+          <span className="font-bold text-lg">Bác sĩ trực tuyến</span>
         </Link>
 
         <NavigationMenu className="hidden lg:flex">
@@ -127,14 +142,43 @@ export default function Navbar() {
 
         <div className="hidden items-center gap-2 lg:flex">
           <ModeToggle />
-          <Link href="/login">
-            <Button
-              className="rounded-md bg-blue-700 px-6 py-2 text-sm text-white hover:bg-blue-800"
-              variant="default"
-            >
-              Đăng nhập
-            </Button>
-          </Link>
+          {isLoggedIn ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger className="inline-flex items-center gap-2 rounded-md border border-border bg-background px-4 py-2 font-medium text-sm shadow-xs transition-colors hover:bg-muted">
+                <User className="h-4 w-4" />
+                {session.user.email}
+                <ChevronDown className="h-4 w-4" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel>
+                  <p className="text-sm">
+                    {session.user.name || session.user.email}
+                  </p>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>
+                  <Link className="flex items-center" href="/dashboard">
+                    <LayoutDashboard className="mr-2 h-4 w-4" />
+                    Dashboard
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Đăng xuất
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Link href="/login">
+              <Button
+                className="rounded-md bg-blue-700 px-6 py-2 text-sm text-white hover:bg-blue-800"
+                variant="default"
+              >
+                Đăng nhập
+              </Button>
+            </Link>
+          )}
         </div>
 
         <div className="flex items-center gap-2 lg:hidden">
@@ -175,6 +219,11 @@ export default function Navbar() {
       >
         <div className="flex h-full flex-col">
           <div className="flex-1 overflow-y-auto pt-2">
+            <div className="flex items-center gap-2 px-4 py-3">
+              <Microscope className="h-6 w-6 text-blue-600" />
+              <span className="font-bold text-lg">Bác sĩ trực tuyến</span>
+            </div>
+            <Separator />
             <div className="flex flex-col">
               {navLinks.map((link, index) => (
                 <div key={link.href}>
@@ -233,14 +282,38 @@ export default function Navbar() {
           </div>
 
           <div className="border-t px-4 pt-4 pb-6">
-            <Link href="/login">
-              <Button
-                className="w-full rounded-md bg-blue-700 py-3 text-sm text-white hover:bg-blue-800"
-                variant="default"
-              >
-                Đăng nhập
-              </Button>
-            </Link>
+            {isLoggedIn ? (
+              <div className="space-y-2">
+                <p className="px-2 text-muted-foreground text-sm">
+                  {session.user.email}
+                </p>
+                <Link href="/dashboard" onClick={() => setOpen(false)}>
+                  <Button
+                    className="w-full rounded-md py-3 text-sm"
+                    variant="outline"
+                  >
+                    Dashboard
+                  </Button>
+                </Link>
+                <Button
+                  className="w-full rounded-md bg-red-600 py-3 text-sm text-white hover:bg-red-700"
+                  onClick={handleLogout}
+                  variant="default"
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Đăng xuất
+                </Button>
+              </div>
+            ) : (
+              <Link href="/login">
+                <Button
+                  className="w-full rounded-md bg-blue-700 py-3 text-sm text-white hover:bg-blue-800"
+                  variant="default"
+                >
+                  Đăng nhập
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
       </div>

@@ -5,6 +5,14 @@ export const siteConfig = {
     github: "https://github.com",
     twitter: "https://twitter.com",
   },
+  mainNav: [
+    { href: "/", title: "Trang chủ" },
+    { href: "/doctors", title: "Tìm bác sĩ" },
+    { href: "/services", title: "Khám từ xa" },
+    { href: "/doctors?filter=in-person", title: "Khám trực tiếp" },
+    { href: "/about", title: "Giới thiệu" },
+    { href: "/join/doctors", title: "Liên kết dịch vụ" },
+  ],
   megaMenuData: [
     {
       services: [
@@ -108,7 +116,7 @@ export const siteConfig = {
       title: "Triệu chứng",
     },
   ],
-  name: "Đặt Khám Bác Sĩ Online",
+  name: "Online Doctors",
   navItems: [
     { href: "/", label: "Trang chủ" },
     { href: "/doctors", label: "Bác sĩ" },

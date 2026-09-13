@@ -125,19 +125,19 @@ export default function Availability() {
   if (!clientDate) {
     return (
       <div className="mb-[100px] px-4 py-4 sm:px-8 sm:py-6">
-        <h2 className="mb-4 font-bold text-lg text-slate-700 sm:text-xl">
+        <h2 className="mb-4 font-bold text-lg text-slate-700 sm:text-xl dark:text-white">
           Chọn ngày và giờ
         </h2>
         <div className="grid grid-cols-2 gap-4">
           <div className="col-span-2 sm:col-span-1">
-            <div className="h-[300px] w-[280px] animate-pulse rounded-md border bg-gray-100" />
+            <div className="h-[300px] w-[280px] animate-pulse rounded-md border bg-gray-100 dark:bg-slate-700" />
           </div>
           <div className="col-span-2 sm:col-span-1">
-            <div className="mb-4 h-[48px] animate-pulse rounded border bg-gray-100" />
+            <div className="mb-4 h-[48px] animate-pulse rounded border bg-gray-100 dark:bg-slate-700" />
             <div className="grid grid-cols-2 gap-3">
               {timeSlots.map((time) => (
                 <div
-                  className="h-[36px] animate-pulse rounded-md border bg-gray-100"
+                  className="h-[36px] animate-pulse rounded-md border bg-gray-100 dark:bg-slate-700"
                   key={time}
                 />
               ))}
@@ -150,14 +150,14 @@ export default function Availability() {
 
   return (
     <div className="mb-[100px] px-4 py-4 sm:px-8 sm:py-6">
-      <h2 className="mb-4 font-bold text-lg text-slate-700 sm:text-xl">
+      <h2 className="mb-4 font-bold text-lg text-slate-700 sm:text-xl dark:text-white">
         Chọn ngày và giờ
       </h2>
 
       <div className="grid grid-cols-2 gap-4">
         <div className="col-span-2 sm:col-span-1">
           <Calendar
-            className="rounded-md border"
+            className="rounded-md border dark:border-gray-700"
             disabled={(date) => isDateInPast(date, today)}
             locale={vi}
             mode="single"
@@ -168,15 +168,15 @@ export default function Availability() {
 
         <div className="col-span-2 sm:col-span-1">
           {bookDate && (
-            <div className="mb-4 border border-blue-500 px-4 py-3 text-center">
-              <p className="font-bold text-slate-700 text-sm uppercase tracking-wider">
+            <div className="mb-4 border border-blue-500 px-4 py-3 text-center dark:bg-slate-800">
+              <p className="font-bold text-slate-700 text-sm uppercase tracking-wider dark:text-white">
                 {formatDate(bookDate)}
               </p>
             </div>
           )}
 
           {isToday && availableTimeSlots.length === 0 && (
-            <p className="mb-4 text-center text-gray-500 text-sm">
+            <p className="mb-4 text-center text-gray-500 text-sm dark:text-gray-400">
               Không có khung giờ khả dụng cho hôm nay. Vui lòng chọn ngày khác.
             </p>
           )}
@@ -187,7 +187,7 @@ export default function Availability() {
                 className={`rounded-md border px-3 py-2 font-medium text-xs transition-colors sm:text-sm ${
                   selectedTime === time
                     ? "border-blue-600 bg-blue-600 text-white"
-                    : "border-gray-200 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white"
+                    : "border-gray-200 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white dark:border-gray-600 dark:bg-slate-700 dark:text-blue-400 dark:hover:bg-blue-600"
                 }`}
                 key={time}
                 onClick={() => setSelectedTime(time)}

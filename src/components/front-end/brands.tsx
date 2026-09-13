@@ -32,9 +32,9 @@ const brands = [
 
 export default function Brands() {
   return (
-    <section className="bg-white py-12">
+    <section className="bg-slate-100 py-12 dark:bg-slate-900">
       <div className="container mx-auto px-4 sm:px-6">
-        <h2 className="pb-8 text-center font-bold text-gray-900 text-xl">
+        <h2 className="pb-8 text-center font-bold text-slate-800 text-xl dark:text-slate-200">
           Được tin tưởng bởi
         </h2>
         <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-12">

@@ -7,16 +7,16 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
 const texts = [
-  "bác sĩ nghề nghiệp",
-  "bác sĩ vật lý trị liệu",
-  "bác sĩ châm cứu",
-  "bác sĩ trị liệu ngôn ngữ",
-  "bác sĩ massage",
+  "bác sĩ nhi",
+  "bác sĩ tâm lý",
+  "bác sĩ da liễu",
+  "bác sĩ dinh dưỡng",
+  "bác sĩ đa khoa",
 ];
 
 export default function Hero() {
   return (
-    <section className="mt-12 bg-blue-950 pt-14 pb-12 sm:mt-[72px] sm:pt-20 sm:pb-16">
+    <section className="mt-12 bg-blue-950 pt-14 pb-12 sm:mt-[72px] sm:pt-20 sm:pb-16 dark:bg-slate-900">
       <div className="mx-auto max-w-7xl px-4 text-center sm:px-6">
         <Badge
           className="mb-4 border-blue-400 bg-blue-900 text-blue-200"
@@ -47,7 +47,7 @@ export default function Hero() {
             Cần bác sĩ khẩn cấp
           </Button>
           <Button
-            className="w-full border-gray-300 bg-white px-8 py-3 text-gray-900 hover:bg-gray-100 hover:text-blue-950 sm:w-auto"
+            className="w-full border-gray-300 bg-white px-8 py-3 text-gray-900 hover:bg-gray-100 hover:text-blue-950 sm:w-auto dark:border-gray-600 dark:bg-slate-800 dark:text-gray-100 dark:hover:bg-slate-700"
             variant="outline"
           >
             <Pill className="mr-2 h-4 w-4 flex-shrink-0 text-blue-500" /> Tôi

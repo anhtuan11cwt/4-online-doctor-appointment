@@ -1,6 +1,6 @@
 "use client";
 
-import { Map as MapIcon } from "lucide-react";
+import { ArrowUpRight, Map as MapIcon } from "lucide-react";
 import Link from "next/link";
 import { doctors } from "../../../public/assets";
 import DoctorListCarousel from "./doctor-list-carousel";
@@ -17,18 +17,19 @@ export default function DoctorsList({
   className?: string;
 }) {
   return (
-    <section className={`py-6 sm:py-8 lg:py-24 ${className}`}>
+    <section className={`py-6 sm:py-8 lg:py-24 ${className} dark:bg-slate-800`}>
       <div className="mx-auto max-w-7xl px-3 sm:px-4 md:px-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <SectionHeading title={title} />
           <div className="flex items-center gap-4">
             {isInPerson ? (
               <Link
-                className="flex items-center gap-2 font-semibold text-blue-600 text-sm"
+                className="inline-flex items-center gap-2 rounded-md border border-border bg-background px-4 py-2 font-medium text-sm shadow-xs transition-colors hover:bg-muted"
                 href="#"
               >
                 <MapIcon className="h-4 w-4 flex-shrink-0" />
                 Xem tất cả
+                <ArrowUpRight className="ms-2 h-4 w-4" />
               </Link>
             ) : (
               <ToggleButton />

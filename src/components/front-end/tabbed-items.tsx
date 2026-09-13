@@ -67,7 +67,7 @@ function getTabContent(activeTab: string) {
   switch (activeTab) {
     case "services":
       return (
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-6">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-8">
           {services.map((s) => (
             <LinkCard
               href={`/services/${s.slug}`}
@@ -79,7 +79,7 @@ function getTabContent(activeTab: string) {
       );
     case "doctors":
       return (
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-6">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-8">
           {doctors.map((d) => (
             <LinkCard
               className="bg-teal-800"
@@ -92,7 +92,7 @@ function getTabContent(activeTab: string) {
       );
     case "specialists":
       return (
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-6">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-8">
           {specialists.map((s) => (
             <LinkCard
               className="bg-blue-900"
@@ -105,7 +105,7 @@ function getTabContent(activeTab: string) {
       );
     case "symptoms":
       return (
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-6">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-8">
           {symptoms.map((s) => (
             <LinkCard
               className="bg-purple-950"
@@ -127,12 +127,12 @@ export default function TabbedItems() {
   return (
     <section className="bg-slate-50 py-16">
       <div className="container mx-auto px-4 sm:px-6">
-        <h2 className="pb-8 text-center font-bold text-2xl text-gray-900">
+        <h2 className="pb-8 text-center font-bold text-3xl text-gray-900">
           Duyệt theo
         </h2>
 
         <div className="mx-auto max-w-6xl">
-          <div className="mb-8 flex flex-wrap justify-center gap-2">
+          <div className="flex flex-wrap justify-center gap-2">
             {tabs.map((tab) => {
               const Icon = tab.icon;
               return (
@@ -153,7 +153,7 @@ export default function TabbedItems() {
             })}
           </div>
 
-          <div>{getTabContent(activeTab)}</div>
+          <div className="mt-8">{getTabContent(activeTab)}</div>
         </div>
       </div>
     </section>
