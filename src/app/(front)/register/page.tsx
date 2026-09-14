@@ -1,9 +1,16 @@
+import type { UserRole } from "@prisma/client";
 import Image from "next/image";
 import RegisterForm from "@/components/auth/register-form";
 
-export default function RegisterPage() {
+export default async function RegisterPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ role?: string; plan?: string }>;
+}) {
+  const { role = "user", plan = "" } = await searchParams;
+
   return (
-    <div className="mx-auto max-w-7xl">
+    <div className="mx-auto max-w-7xl pt-16">
       <div className="grid min-h-svh lg:grid-cols-2">
         <div className="relative hidden bg-muted lg:block">
           <Image
@@ -17,7 +24,7 @@ export default function RegisterPage() {
         <div className="flex flex-col gap-4 p-6 md:p-10">
           <div className="flex flex-1 items-center justify-center">
             <div className="w-full max-w-xs">
-              <RegisterForm />
+              <RegisterForm plan={plan} role={role as UserRole | "user"} />
             </div>
           </div>
         </div>

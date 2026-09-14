@@ -12,6 +12,9 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id;
         token.role = (user as { role?: string }).role;
+        token.onboardingPage = (
+          user as { onboardingPage?: string | null }
+        ).onboardingPage;
       }
 
       if (token.email) {
@@ -22,6 +25,7 @@ export const authOptions: NextAuthOptions = {
         if (dbUser) {
           token.id = dbUser.id;
           token.role = dbUser.role;
+          token.onboardingPage = dbUser.onboardingPage;
         }
       }
 
@@ -31,6 +35,7 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         session.user.id = token.id as string;
         session.user.role = token.role as string;
+        session.user.onboardingPage = token.onboardingPage as string | null;
       }
 
       return session;

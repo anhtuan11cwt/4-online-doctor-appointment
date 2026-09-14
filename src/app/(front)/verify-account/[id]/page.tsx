@@ -38,7 +38,11 @@ export default async function VerifyAccountPage({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <VerifyTokenForm id={id} userToken={user.token ?? ""} />
+          <VerifyTokenForm
+            id={id}
+            userRole={user.role}
+            userToken={user.token ?? ""}
+          />
         </CardContent>
       </Card>
     </div>

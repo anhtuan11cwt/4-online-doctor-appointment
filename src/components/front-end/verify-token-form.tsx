@@ -25,9 +25,11 @@ type FormSchema = z.infer<typeof formSchema>;
 export default function VerifyTokenForm({
   userToken,
   id,
+  userRole,
 }: {
   userToken: string;
   id: string;
+  userRole: string;
 }) {
   const [isLoading, setIsLoading] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
@@ -59,7 +61,11 @@ export default function VerifyTokenForm({
         await updateUserById(id);
         toast.success("Tài khoản đã được xác minh!");
         setShowNotification(false);
-        router.push("/login");
+        if (userRole === "DOCTOR") {
+          router.push(`/onboarding/${id}`);
+        } else {
+          router.push("/login");
+        }
       } else {
         setShowNotification(true);
       }

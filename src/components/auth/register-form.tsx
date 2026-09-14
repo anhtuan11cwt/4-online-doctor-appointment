@@ -19,7 +19,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { type RegisterSchema, registerSchema } from "@/lib/validations";
 
-export default function RegisterForm() {
+export default function RegisterForm({
+  role = "user",
+  plan = "",
+}: {
+  role?: string;
+  plan?: string;
+}) {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
@@ -34,7 +40,7 @@ export default function RegisterForm() {
   const onSubmit = async (data: RegisterSchema) => {
     setIsLoading(true);
     try {
-      const result = await createUser(data);
+      const result = await createUser({ ...data, plan, role });
       if (result.error) {
         toast.error(result.error);
       } else {
@@ -50,13 +56,19 @@ export default function RegisterForm() {
     }
   };
 
+  const isDoctor = role === "doctor";
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <FieldGroup className={isLoading ? "pointer-events-none" : ""}>
         <div className="flex flex-col items-center gap-1 text-center">
-          <h1 className="font-bold text-2xl">Tạo tài khoản mới</h1>
+          <h1 className="font-bold text-2xl">
+            {isDoctor ? "Tạo tài khoản bác sĩ" : "Tạo tài khoản mới"}
+          </h1>
           <p className="text-balance text-muted-foreground text-sm">
-            Điền thông tin bên dưới để đăng ký tài khoản
+            {isDoctor
+              ? "Đăng ký tài khoản bác sĩ để bắt đầu cung cấp dịch vụ"
+              : "Điền thông tin bên dưới để đăng ký tài khoản"}
           </p>
         </div>
         <Field>
@@ -148,7 +160,7 @@ export default function RegisterForm() {
         <Field>
           <Button className="w-full" disabled={isLoading} type="submit">
             {isLoading && <Loader2 className="mr-2 size-4 animate-spin" />}
-            Đăng ký
+            {isDoctor ? "Đăng ký bác sĩ" : "Đăng ký"}
           </Button>
         </Field>
         <Field>
@@ -164,6 +176,21 @@ export default function RegisterForm() {
             </Link>
           </p>
         </Field>
+        {!isDoctor && (
+          <Field>
+            <p
+              className={`text-center text-muted-foreground text-sm ${isLoading ? "opacity-50" : ""}`}
+            >
+              Bạn là bác sĩ?{" "}
+              <Link
+                className={`font-medium text-primary underline-offset-4 hover:underline ${isLoading ? "pointer-events-none" : ""}`}
+                href="/register?role=doctor&plan=professional"
+              >
+                Đăng ký ngay
+              </Link>
+            </p>
+          </Field>
+        )}
       </FieldGroup>
     </form>
   );

@@ -107,3 +107,40 @@ export const settingsSchema = z.object({
 export type LoginSchema = z.infer<typeof loginSchema>;
 export type RegisterSchema = z.infer<typeof registerSchema>;
 export type SettingsSchema = z.infer<typeof settingsSchema>;
+
+export const bioDataSchema = z.object({
+  address: z
+    .string()
+    .trim()
+    .min(1, "Địa chỉ là bắt buộc")
+    .min(5, "Địa chỉ phải có ít nhất 5 ký tự")
+    .max(200, "Địa chỉ không được vượt quá 200 ký tự"),
+  dateOfBirth: z
+    .string()
+    .min(1, "Ngày sinh là bắt buộc")
+    .refine((val) => {
+      const date = new Date(val);
+      const now = new Date();
+      const age = now.getFullYear() - date.getFullYear();
+      return age >= 18 && age <= 100;
+    }, "Bạn phải từ 18 đến 100 tuổi"),
+  email: z.string().min(1, "Email là bắt buộc").email("Email không hợp lệ"),
+  fullName: z
+    .string()
+    .trim()
+    .min(1, "Họ và tên là bắt buộc")
+    .min(2, "Họ và tên phải có ít nhất 2 ký tự")
+    .max(100, "Họ và tên không được vượt quá 100 ký tự")
+    .regex(
+      /^[a-zA-ZÀ-ỹ]+(?: [a-zA-ZÀ-ỹ]+)*$/,
+      "Họ và tên chỉ được chứa chữ cái và khoảng trắng giữa các từ",
+    )
+    .refine((val) => !/[0-9]/.test(val), "Họ và tên không được chứa số")
+    .refine(
+      (val) => !/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~]/.test(val),
+      "Họ và tên không được chứa ký tự đặc biệt",
+    ),
+  phone: phoneValidation,
+});
+
+export type BioDataSchema = z.infer<typeof bioDataSchema>;

@@ -19,7 +19,15 @@ export default function DashboardLayout({
     if (status === "unauthenticated") {
       router.push("/login");
     }
-  }, [status, router]);
+
+    if (
+      status === "authenticated" &&
+      session.user.role === "DOCTOR" &&
+      !session.user.onboardingPage
+    ) {
+      router.push(`/onboarding/${session.user.id}`);
+    }
+  }, [status, router, session]);
 
   if (status === "loading") {
     return (

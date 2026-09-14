@@ -14,7 +14,11 @@ export default function FrontLayout({
 }) {
   const pathname = usePathname();
   const { data: session } = useSession();
-  const isAuthPage = pathname === "/login" || pathname === "/register";
+  const isAuthPage =
+    pathname === "/login" ||
+    pathname === "/register" ||
+    pathname.startsWith("/verify-account") ||
+    pathname.startsWith("/onboarding");
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -22,8 +26,8 @@ export default function FrontLayout({
       <Navbar session={session ?? undefined} />
       {!isAuthPage && <MegaMenu />}
       <main className="flex-1">{children}</main>
-      <div className="bg-blue-50 py-8 dark:bg-slate-900" />
-      <Footer />
+      {!isAuthPage && <div className="bg-blue-50 py-8 dark:bg-slate-900" />}
+      {!isAuthPage && <Footer />}
     </div>
   );
 }

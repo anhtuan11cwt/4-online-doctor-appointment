@@ -140,6 +140,19 @@ export default function LoginForm() {
             </Link>
           </p>
         </Field>
+        <Field>
+          <p
+            className={`text-center text-muted-foreground text-sm ${isLoading ? "opacity-50" : ""}`}
+          >
+            Bạn là bác sĩ?{" "}
+            <Link
+              className={`font-medium text-primary underline-offset-4 hover:underline ${isLoading ? "pointer-events-none" : ""}`}
+              href="/register?role=doctor&plan=professional"
+            >
+              Đăng ký ngay
+            </Link>
+          </p>
+        </Field>
       </FieldGroup>
     </form>
   );

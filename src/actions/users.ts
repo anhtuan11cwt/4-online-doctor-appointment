@@ -78,8 +78,59 @@ export async function updateUserById(id: string) {
   }
 }
 
+export async function updateOnboardingStep(id: string, page: string) {
+  try {
+    const updatedUser = await prisma.user.update({
+      data: { onboardingPage: page },
+      where: { id },
+    });
+
+    return updatedUser;
+  } catch (error) {
+    console.error("Lỗi cập nhật bước onboarding:", error);
+    return null;
+  }
+}
+
+export async function updateOnboardingData(
+  id: string,
+  step: string,
+  data: Record<string, unknown>,
+) {
+  try {
+    const existingUser = await prisma.user.findUnique({ where: { id } });
+    if (!existingUser) {
+      return { error: "Không tìm thấy người dùng" };
+    }
+
+    const currentData = existingUser.onboardingPage
+      ? JSON.parse(existingUser.onboardingPage)
+      : {};
+
+    const updatedData = {
+      ...currentData,
+      [step]: data,
+      currentPage: step,
+    };
+
+    await prisma.user.update({
+      data: { onboardingPage: JSON.stringify(updatedData) },
+      where: { id },
+    });
+
+    return { error: null };
+  } catch (error) {
+    console.error("Lỗi cập nhật dữ liệu onboarding:", error);
+    return { error: "Đã có lỗi xảy ra" };
+  }
+}
+
 export async function createUser(data: unknown) {
   try {
+    const rawData = data as Record<string, unknown>;
+    const role = (rawData.role as string) || "user";
+    const plan = (rawData.plan as string) || "";
+
     const validated = registerSchema.safeParse(data);
 
     if (!validated.success) {
@@ -115,7 +166,8 @@ export async function createUser(data: unknown) {
         name: fullName,
         password: hashedPassword,
         phone,
-        role: "USER",
+        plan: plan || null,
+        role: role?.toUpperCase() === "DOCTOR" ? "DOCTOR" : "USER",
         token,
       },
     });
