@@ -3,7 +3,7 @@
 import bcrypt from "bcrypt";
 import nodemailer from "nodemailer";
 import { prisma } from "@/lib/db";
-import { registerSchema } from "@/lib/validations";
+import { onboardingSchemas, registerSchema } from "@/lib/validations";
 
 const transporter = nodemailer.createTransport({
   auth: {
@@ -103,13 +103,28 @@ export async function updateOnboardingData(
       return { error: "Không tìm thấy người dùng" };
     }
 
+    let validatedData = data;
+
+    const schema = onboardingSchemas[step as keyof typeof onboardingSchemas];
+    if (schema) {
+      const result = schema.safeParse(data);
+      if (!result.success) {
+        const firstError = result.error.issues[0];
+        return {
+          error: firstError?.message || "Dữ liệu không hợp lệ",
+          fieldErrors: result.error.flatten().fieldErrors,
+        };
+      }
+      validatedData = { ...data, ...(result.data as Record<string, unknown>) };
+    }
+
     const currentData = existingUser.onboardingPage
       ? JSON.parse(existingUser.onboardingPage)
       : {};
 
     const updatedData = {
       ...currentData,
-      [step]: data,
+      [step]: validatedData,
       currentPage: step,
     };
 

@@ -2,6 +2,7 @@
 
 import type { FieldErrors, Path, UseFormRegister } from "react-hook-form";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 type TextInputProps<T extends Record<string, unknown>> = {
   label: string;
@@ -20,12 +21,8 @@ export default function TextInput<T extends Record<string, unknown>>({
 }: TextInputProps<T>) {
   return (
     <div className="space-y-2">
-      {label && (
-        <label className="font-medium text-gray-700 text-sm" htmlFor={name}>
-          {label}
-        </label>
-      )}
-      <Input id={name} type={type} {...register(name, { required: true })} />
+      {label && <Label htmlFor={name}>{label}</Label>}
+      <Input id={name} type={type} {...register(name)} />
       {errors[name] && (
         <p className="text-red-600 text-xs">{label || name} là bắt buộc</p>
       )}

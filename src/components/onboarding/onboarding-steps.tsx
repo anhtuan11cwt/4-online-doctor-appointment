@@ -2,12 +2,13 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
-import toast from "react-hot-toast";
 import { cn } from "@/lib/utils";
 import BioDataForm from "./bio-data-form";
+import ProfileInfoForm from "./profile-info-form";
 
 const steps = [
   { page: "biodata", title: "Thông tin cơ bản" },
+  { page: "profile", title: "Thông tin hồ sơ" },
   { page: "contact", title: "Thông tin liên hệ" },
   { page: "professional", title: "Thông tin chuyên môn" },
   { page: "education", title: "Học vấn" },
@@ -35,7 +36,6 @@ export default function OnboardingSteps({
   useEffect(() => {
     if (saved === "1" && !toastShown.current) {
       toastShown.current = true;
-      toast.success("Lưu thành công!");
       window.history.replaceState({}, "", `/onboarding/${id}?page=${page}`);
     }
   }, [saved, id, page]);
@@ -58,6 +58,20 @@ export default function OnboardingSteps({
               onboardingData.biodata as Record<string, string> | undefined
             }
             user={user}
+          />
+        );
+      case "profile":
+        return (
+          <ProfileInfoForm
+            id={id}
+            onComplete={() => {
+              if (nextPage) {
+                router.push(`/onboarding/${id}?page=${nextPage}&saved=1`);
+              }
+            }}
+            savedData={
+              onboardingData.profile as Record<string, string> | undefined
+            }
           />
         );
       default:

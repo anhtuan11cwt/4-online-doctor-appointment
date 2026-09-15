@@ -1,28 +1,46 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { format } from "date-fns";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { updateOnboardingData } from "@/actions/users";
+import DatePickerInput from "@/components/form-inputs/date-picker-input";
+import RadioInput, {
+  type RadioOption,
+} from "@/components/form-inputs/radio-input";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { type BioDataSchema, bioDataSchema } from "@/lib/validations";
+
+const genderOptions: RadioOption[] = [
+  { label: "Nam", value: "male" },
+  { label: "Nữ", value: "female" },
+];
 
 export default function BioDataForm({
   id,
   user,
   savedData,
+  title = "Thông tin cơ bản",
+  description = "Vui lòng điền thông tin cơ bản của bạn",
   onComplete,
 }: {
   id: string;
   user: { email: string; name: string | null; phone: string | null };
   savedData?: Record<string, string>;
+  title?: string;
+  description?: string;
   onComplete?: () => void;
 }) {
   const [isLoading, setIsLoading] = useState(false);
+  const [date, setDate] = useState<Date | undefined>(
+    savedData?.dateOfBirth ? new Date(savedData.dateOfBirth) : undefined,
+  );
   const isMounted = useSyncExternalStore(
     () => () => {},
     () => true,
@@ -35,7 +53,6 @@ export default function BioDataForm({
     today.getMonth(),
     today.getDate(),
   );
-  const maxDateStr = maxDate.toISOString().split("T")[0];
 
   const {
     register,
@@ -45,32 +62,40 @@ export default function BioDataForm({
   } = useForm<BioDataSchema>({
     defaultValues: {
       address: savedData?.address ?? "",
-      dateOfBirth: savedData?.dateOfBirth ?? "",
       email: user.email,
       fullName: user.name ?? "",
+      gender: (savedData?.gender as "male" | "female") ?? undefined,
       phone: user.phone ?? "",
     },
     resolver: zodResolver(bioDataSchema),
   });
 
-  // Đồng bộ lại giá trị sau hydration để đảm bảo dữ liệu thật luôn được hiển thị
   useEffect(() => {
     reset({
       address: savedData?.address ?? "",
-      dateOfBirth: savedData?.dateOfBirth ?? "",
       email: user.email,
       fullName: user.name ?? "",
+      gender: (savedData?.gender as "male" | "female") ?? undefined,
       phone: user.phone ?? "",
     });
   }, [user.email, user.name, user.phone, savedData, reset]);
 
   const onSubmit = async (data: BioDataSchema) => {
+    if (!date) {
+      toast.error("Vui lòng chọn ngày sinh");
+      return;
+    }
     setIsLoading(true);
     try {
-      const result = await updateOnboardingData(id, "biodata", data);
+      const formattedData = {
+        ...data,
+        dateOfBirth: format(date, "yyyy-MM-dd"),
+      };
+      const result = await updateOnboardingData(id, "biodata", formattedData);
       if (result?.error) {
         toast.error(result.error);
       } else {
+        toast.success("Lưu thông tin cơ bản thành công!");
         onComplete?.();
       }
     } catch {
@@ -84,10 +109,8 @@ export default function BioDataForm({
     return (
       <div className="space-y-4">
         <div className="mb-6 border-b pb-4">
-          <h3 className="font-bold text-lg">Thông tin cơ bản</h3>
-          <p className="mt-1 text-muted-foreground text-sm">
-            Vui lòng điền thông tin cơ bản của bạn
-          </p>
+          <h3 className="font-bold text-lg">{title}</h3>
+          <p className="mt-1 text-muted-foreground text-sm">{description}</p>
         </div>
         <div className="grid grid-cols-2 gap-4">
           {["name", "email", "phone", "date"].map((field) => (
@@ -108,17 +131,15 @@ export default function BioDataForm({
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="mb-6 border-b pb-4">
-        <h3 className="font-bold text-lg">Thông tin cơ bản</h3>
-        <p className="mt-1 text-muted-foreground text-sm">
-          Vui lòng điền thông tin cơ bản của bạn
-        </p>
+        <h3 className="font-bold text-lg">{title}</h3>
+        <p className="mt-1 text-muted-foreground text-sm">{description}</p>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <label className="font-medium text-sm" htmlFor="fullName">
+          <Label htmlFor="fullName">
             Họ và tên <span className="text-red-500">*</span>
-          </label>
+          </Label>
           <Input
             className={cn(
               errors.fullName && "border-red-500",
@@ -135,9 +156,9 @@ export default function BioDataForm({
         </div>
 
         <div className="space-y-2">
-          <label className="font-medium text-sm" htmlFor="email">
+          <Label htmlFor="email">
             Email <span className="text-red-500">*</span>
-          </label>
+          </Label>
           <Input
             className={cn(errors.email && "border-red-500", "opacity-50")}
             disabled
@@ -152,9 +173,9 @@ export default function BioDataForm({
         </div>
 
         <div className="space-y-2">
-          <label className="font-medium text-sm" htmlFor="phone">
+          <Label htmlFor="phone">
             Số điện thoại <span className="text-red-500">*</span>
-          </label>
+          </Label>
           <Input
             className={cn(errors.phone && "border-red-500", "opacity-50")}
             disabled
@@ -170,30 +191,29 @@ export default function BioDataForm({
           )}
         </div>
 
-        <div className="space-y-2">
-          <label className="font-medium text-sm" htmlFor="dateOfBirth">
-            Ngày sinh <span className="text-red-500">*</span>
-          </label>
-          <Input
-            className={cn(
-              errors.dateOfBirth && "border-red-500",
-              isLoading && "opacity-50",
-            )}
-            disabled={isLoading}
-            id="dateOfBirth"
-            max={maxDateStr}
-            type="date"
-            {...register("dateOfBirth")}
-          />
-          {errors.dateOfBirth && (
-            <p className="text-red-500 text-xs">{errors.dateOfBirth.message}</p>
-          )}
-        </div>
+        <DatePickerInput
+          date={date}
+          defaultMonth={maxDate}
+          disabled={isLoading}
+          maxDate={maxDate}
+          setDate={setDate}
+          title="Ngày sinh"
+        />
+
+        <RadioInput
+          className="content-end"
+          disabled={isLoading}
+          errors={errors}
+          name="gender"
+          options={genderOptions}
+          register={register}
+          title="Giới tính"
+        />
 
         <div className="col-span-full space-y-2">
-          <label className="font-medium text-sm" htmlFor="address">
+          <Label htmlFor="address">
             Địa chỉ <span className="text-red-500">*</span>
-          </label>
+          </Label>
           <Input
             className={cn(
               errors.address && "border-red-500",
