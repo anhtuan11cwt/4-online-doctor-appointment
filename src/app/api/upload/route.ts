@@ -8,6 +8,7 @@ const ALLOWED_TYPES = [
   "image/webp",
   "image/gif",
   "image/svg+xml",
+  "application/pdf",
 ];
 
 function extractPublicId(imageUrl: string): string | null {

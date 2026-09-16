@@ -131,7 +131,7 @@ export default function ProfileInfoForm({
         <p className="mt-1 text-muted-foreground text-sm">{description}</p>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 items-start gap-4">
         <div className="space-y-2">
           <Label htmlFor="medicalLicense">
             Số giấy phép hành nghề <span className="text-red-500">*</span>

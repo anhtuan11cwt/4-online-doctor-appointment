@@ -3,15 +3,19 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
+import AdditionalInfoForm from "./additional-info-form";
+import AvailabilityForm from "./availability-form";
 import BioDataForm from "./bio-data-form";
+import ContactInfoForm from "./contact-info-form";
+import EducationForm from "./education-form";
+import PracticeForm from "./practice-form";
 import ProfileInfoForm from "./profile-info-form";
 
 const steps = [
   { page: "biodata", title: "Thông tin cơ bản" },
   { page: "profile", title: "Thông tin hồ sơ" },
   { page: "contact", title: "Thông tin liên hệ" },
-  { page: "professional", title: "Thông tin chuyên môn" },
-  { page: "education", title: "Học vấn" },
+  { page: "education", title: "Thông tin giáo dục" },
   { page: "practice", title: "Thông tin thực hành" },
   { page: "additional", title: "Thông tin bổ sung" },
   { page: "availability", title: "Thời gian rảnh" },
@@ -58,6 +62,7 @@ export default function OnboardingSteps({
               onboardingData.biodata as Record<string, string> | undefined
             }
             user={user}
+            userId={id}
           />
         );
       case "profile":
@@ -74,6 +79,76 @@ export default function OnboardingSteps({
             }
           />
         );
+      case "contact":
+        return (
+          <ContactInfoForm
+            id={id}
+            onComplete={() => {
+              if (nextPage) {
+                router.push(`/onboarding/${id}?page=${nextPage}&saved=1`);
+              }
+            }}
+            savedData={
+              onboardingData.contact as Record<string, string> | undefined
+            }
+          />
+        );
+      case "education":
+        return (
+          <EducationForm
+            id={id}
+            onComplete={() => {
+              if (nextPage) {
+                router.push(`/onboarding/${id}?page=${nextPage}&saved=1`);
+              }
+            }}
+            savedData={
+              onboardingData.education as Record<string, string> | undefined
+            }
+          />
+        );
+      case "practice":
+        return (
+          <PracticeForm
+            id={id}
+            onComplete={() => {
+              if (nextPage) {
+                router.push(`/onboarding/${id}?page=${nextPage}&saved=1`);
+              }
+            }}
+            savedData={
+              onboardingData.practice as Record<string, string> | undefined
+            }
+          />
+        );
+      case "additional":
+        return (
+          <AdditionalInfoForm
+            id={id}
+            onComplete={() => {
+              if (nextPage) {
+                router.push(`/onboarding/${id}?page=${nextPage}&saved=1`);
+              }
+            }}
+            savedData={
+              onboardingData.additional as Record<string, string> | undefined
+            }
+          />
+        );
+      case "availability":
+        return (
+          <AvailabilityForm
+            id={id}
+            onComplete={() => {
+              if (nextPage) {
+                router.push(`/onboarding/${id}?page=${nextPage}&saved=1`);
+              }
+            }}
+            savedData={
+              onboardingData.availability as Record<string, string> | undefined
+            }
+          />
+        );
       default:
         return (
           <div className="flex h-full items-center justify-center">
@@ -87,7 +162,7 @@ export default function OnboardingSteps({
 
   return (
     <div className="grid min-h-[80vh] grid-cols-12 gap-4">
-      <div className="col-span-12 rounded-lg bg-slate-200 p-3 sm:col-span-3 dark:bg-slate-700">
+      <div className="col-span-12 h-full rounded-lg bg-slate-200 p-3 sm:col-span-3 dark:bg-slate-700">
         <h2 className="mb-4 px-2 font-bold text-slate-700 text-sm uppercase tracking-wider dark:text-slate-200">
           Các bước
         </h2>

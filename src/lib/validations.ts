@@ -167,68 +167,39 @@ export const contactInfoSchema = z.object({
   city: z
     .string()
     .trim()
-    .min(1, "Thành phố là bắt buộc")
-    .max(100, "Thành phố không được vượt quá 100 ký tự"),
-  district: z
-    .string()
-    .trim()
-    .min(1, "Quận/Huyện là bắt buộc")
-    .max(100, "Quận/Huyện không được vượt quá 100 ký tự"),
+    .min(1, "Tỉnh/Thành phố là bắt buộc")
+    .min(2, "Tỉnh/Thành phố phải có ít nhất 2 ký tự")
+    .max(100, "Tỉnh/Thành phố không được vượt quá 100 ký tự")
+    .regex(
+      /^[a-zA-ZÀ-ỹ\s]+$/,
+      "Tỉnh/Thành phố chỉ được chứa chữ cái và khoảng trắng",
+    ),
   emergencyContactName: z
     .string()
     .trim()
     .min(1, "Tên người liên hệ khẩn cấp là bắt buộc")
-    .max(100, "Tên không được vượt quá 100 ký tự"),
-  emergencyContactPhone: z
-    .string()
-    .trim()
-    .min(1, "Số điện thoại liên hệ khẩn cấp là bắt buộc")
-    .regex(/^[0-9]+$/, "Số điện thoại chỉ được chứa chữ số")
-    .length(10, "Số điện thoại phải có đúng 10 chữ số"),
+    .min(2, "Tên phải có ít nhất 2 ký tự")
+    .max(100, "Tên không được vượt quá 100 ký tự")
+    .regex(
+      /^[a-zA-ZÀ-ỹ]+(?: [a-zA-ZÀ-ỹ]+)*$/,
+      "Tên chỉ được chứa chữ cái và khoảng trắng giữa các từ",
+    ),
+  emergencyContactPhone: phoneValidation,
   emergencyContactRelationship: z
     .string()
     .trim()
     .min(1, "Mối quan hệ là bắt buộc")
+    .min(2, "Mối quan hệ phải có ít nhất 2 ký tự")
     .max(50, "Mối quan hệ không được vượt quá 50 ký tự"),
   ward: z
     .string()
     .trim()
-    .max(100, "Phường/Xã không được vượt quá 100 ký tự")
-    .optional()
-    .or(z.literal("")),
+    .min(1, "Phường/Xã là bắt buộc")
+    .min(2, "Phường/Xã phải có ít nhất 2 ký tự")
+    .max(100, "Phường/Xã không được vượt quá 100 ký tự"),
 });
 
 export type ContactInfoSchema = z.infer<typeof contactInfoSchema>;
-
-export const professionalInfoSchema = z.object({
-  certifications: z
-    .array(z.string().trim().min(1))
-    .optional()
-    .or(z.literal("")),
-  consultationFee: z
-    .number({ message: "Phí tư vấn phải là số" })
-    .min(0, "Phí tư vấn phải lớn hơn hoặc bằng 0"),
-  languages: z
-    .array(z.string().trim().min(1))
-    .min(1, "Phải chọn ít nhất 1 ngôn ngữ"),
-  specialization: z
-    .string()
-    .trim()
-    .min(1, "Chuyên khoa là bắt buộc")
-    .max(100, "Chuyên khoa không được vượt quá 100 ký tự"),
-  subSpecialization: z
-    .string()
-    .trim()
-    .max(100, "Chuyên khoa phụ không được vượt quá 100 ký tự")
-    .optional()
-    .or(z.literal("")),
-  yearsOfExperience: z
-    .number({ message: "Số năm kinh nghiệm phải là số" })
-    .min(0, "Số năm kinh nghiệm phải lớn hơn hoặc bằng 0")
-    .max(60, "Số năm kinh nghiệm không được vượt quá 60"),
-});
-
-export type ProfessionalInfoSchema = z.infer<typeof professionalInfoSchema>;
 
 export const educationSchema = z.object({
   additionalCourses: z
@@ -254,57 +225,92 @@ export const educationSchema = z.object({
 export type EducationSchema = z.infer<typeof educationSchema>;
 
 export const practiceInfoSchema = z.object({
-  department: z
+  hospitalAddress: z
     .string()
     .trim()
-    .max(100, "Khoa/Phòng không được vượt quá 100 ký tự")
-    .optional()
-    .or(z.literal("")),
+    .min(1, "Địa chỉ bệnh viện là bắt buộc")
+    .max(300, "Địa chỉ không được vượt quá 300 ký tự"),
+  hospitalContactNumber: z
+    .string()
+    .trim()
+    .min(1, "Số liên hệ là bắt buộc")
+    .regex(/^[0-9]+$/, "Số liên hệ chỉ được chứa chữ số")
+    .max(20, "Số liên hệ không được vượt quá 20 ký tự"),
+  hospitalEmailAddress: z
+    .string()
+    .trim()
+    .min(1, "Email bệnh viện là bắt buộc")
+    .email("Email không hợp lệ"),
   hospitalName: z
     .string()
     .trim()
-    .min(1, "Tên bệnh viện/phòng khám là bắt buộc")
-    .max(200, "Tên không được vượt quá 200 ký tự"),
-  isCurrentWorkplace: z.boolean().optional(),
-  position: z
+    .min(1, "Tên bệnh viện là bắt buộc")
+    .max(200, "Tên bệnh viện không được vượt quá 200 ký tự"),
+  hospitalWebsite: z
     .string()
     .trim()
-    .max(100, "Chức vụ không được vượt quá 100 ký tự")
+    .max(200, "Website không được vượt quá 200 ký tự")
     .optional()
     .or(z.literal("")),
-  practiceAddress: z
+  hoursOfOperation: z
     .string()
     .trim()
-    .min(1, "Địa chỉ thực hành là bắt buộc")
-    .max(300, "Địa chỉ không được vượt quá 300 ký tự"),
+    .min(1, "Giờ hoạt động là bắt buộc")
+    .max(100, "Giờ hoạt động không được vượt quá 100 ký tự"),
+  insuranceAccepted: z.enum(["yes", "no"], {
+    message: "Vui lòng chọn tùy chọn bảo hiểm",
+  }),
+  languagesSpoken: z
+    .array(z.string().trim().min(1))
+    .min(1, "Phải chọn ít nhất 1 ngôn ngữ"),
+  servicesOffered: z
+    .array(z.string().trim().min(1))
+    .min(1, "Phải cung cấp ít nhất 1 dịch vụ"),
 });
 
 export type PracticeInfoSchema = z.infer<typeof practiceInfoSchema>;
 
 export const additionalInfoSchema = z.object({
-  additionalNotes: z
+  accomplishments: z
     .string()
     .trim()
-    .max(500, "Ghi chú thêm không được vượt quá 500 ký tự")
+    .min(1, "Thành tựu là bắt buộc")
+    .max(2000, "Không được vượt quá 2000 ký tự"),
+  additionalDocs: z
+    .array(
+      z.union([
+        z.string(),
+        z.object({
+          name: z.string(),
+          size: z.number(),
+          url: z.string(),
+        }),
+      ]),
+    )
     .optional()
     .or(z.literal("")),
-  awards: z.array(z.string().trim().min(1)).optional().or(z.literal("")),
-  professionalMemberships: z
-    .array(z.string().trim().min(1))
-    .optional()
-    .or(z.literal("")),
-  publications: z.array(z.string().trim().min(1)).optional().or(z.literal("")),
-  researchInterests: z
+  educationHistory: z
     .string()
     .trim()
-    .max(500, "Lĩnh vực nghiên cứu không được vượt quá 500 ký tự")
-    .optional()
-    .or(z.literal("")),
+    .min(1, "Lịch sử giáo dục là bắt buộc")
+    .max(2000, "Không được vượt quá 2000 ký tự"),
+  publishedWork: z
+    .string()
+    .trim()
+    .min(1, "Công trình nghiên cứu là bắt buộc")
+    .max(2000, "Không được vượt quá 2000 ký tự"),
 });
 
 export type AdditionalInfoSchema = z.infer<typeof additionalInfoSchema>;
 
 export const availabilitySchema = z.object({
+  availabilityType: z.enum(["weekly", "specificDates"], {
+    message: "Vui lòng chọn loại lịch rảnh",
+  }),
+  duration: z
+    .number({ message: "Thời lượng phải là số" })
+    .min(1, "Thời lượng phải lớn hơn 0")
+    .max(480, "Thời lượng không được vượt quá 480 phút"),
   schedule: z
     .array(
       z.object({
@@ -342,7 +348,6 @@ export const onboardingSchemas = {
   contact: contactInfoSchema,
   education: educationSchema,
   practice: practiceInfoSchema,
-  professional: professionalInfoSchema,
   profile: profileInfoSchema,
 } as const;
 

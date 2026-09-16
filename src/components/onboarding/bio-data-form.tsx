@@ -6,6 +6,7 @@ import { Loader2 } from "lucide-react";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
+import { createDoctorProfile } from "@/actions/onboarding";
 import { updateOnboardingData } from "@/actions/users";
 import DatePickerInput from "@/components/form-inputs/date-picker-input";
 import RadioInput, {
@@ -14,6 +15,7 @@ import RadioInput, {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { generateTrackingNumber } from "@/lib/generate-tracking";
 import { cn } from "@/lib/utils";
 import { type BioDataSchema, bioDataSchema } from "@/lib/validations";
 
@@ -24,6 +26,7 @@ const genderOptions: RadioOption[] = [
 
 export default function BioDataForm({
   id,
+  userId,
   user,
   savedData,
   title = "Thông tin cơ bản",
@@ -31,6 +34,7 @@ export default function BioDataForm({
   onComplete,
 }: {
   id: string;
+  userId: string;
   user: { email: string; name: string | null; phone: string | null };
   savedData?: Record<string, string>;
   title?: string;
@@ -95,6 +99,19 @@ export default function BioDataForm({
       if (result?.error) {
         toast.error(result.error);
       } else {
+        const trackingNumber = generateTrackingNumber();
+        await createDoctorProfile({
+          dateOfBirth: new Date(date),
+          email: data.email,
+          firstName: data.fullName.split(" ").slice(-1)[0] ?? "",
+          gender: data.gender,
+          lastName: data.fullName.split(" ").slice(0, -1).join(" ") ?? "",
+          middleName: "",
+          page: "profile",
+          phone: data.phone,
+          trackingNumber,
+          userId,
+        });
         toast.success("Lưu thông tin cơ bản thành công!");
         onComplete?.();
       }
@@ -112,7 +129,7 @@ export default function BioDataForm({
           <h3 className="font-bold text-lg">{title}</h3>
           <p className="mt-1 text-muted-foreground text-sm">{description}</p>
         </div>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 items-start gap-4">
           {["name", "email", "phone", "date"].map((field) => (
             <div className="space-y-2" key={field}>
               <div className="h-4 w-24 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
@@ -135,7 +152,7 @@ export default function BioDataForm({
         <p className="mt-1 text-muted-foreground text-sm">{description}</p>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 items-start gap-4">
         <div className="space-y-2">
           <Label htmlFor="fullName">
             Họ và tên <span className="text-red-500">*</span>

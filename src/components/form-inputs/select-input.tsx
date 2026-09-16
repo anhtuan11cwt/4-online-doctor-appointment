@@ -1,23 +1,22 @@
 "use client";
 
+import { Label } from "@/components/ui/label";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  NativeSelect,
+  NativeSelectOption,
+} from "@/components/ui/native-select";
 import { cn } from "@/lib/utils";
 
 type SelectInputProps = {
+  className?: string;
+  disabled?: boolean;
+  errors?: Record<string, { message?: string }>;
   label: string;
   name: string;
-  value?: string;
-  onChange?: (value: string) => void;
+  onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   options: { label: string; value: string }[];
   placeholder?: string;
-  errors?: Record<string, { message?: string }>;
-  className?: string;
+  value?: string;
 };
 
 export default function SelectInput({
@@ -29,34 +28,33 @@ export default function SelectInput({
   placeholder = "Chọn một tùy chọn",
   errors,
   className,
+  disabled = false,
 }: SelectInputProps) {
+  const error = errors?.[name];
+  const message =
+    error && typeof error === "object" && "message" in error
+      ? (error.message as string)
+      : undefined;
+
   return (
     <div className={cn("grid gap-2", className)}>
-      {label && (
-        <label className="font-medium text-gray-700 text-sm" htmlFor={name}>
-          {label}
-        </label>
-      )}
-      <Select onValueChange={(v) => onChange?.(v ?? "")} value={value}>
-        <SelectTrigger
-          className={cn("w-full", errors?.[name] && "border-red-500")}
-          id={name}
-        >
-          <SelectValue placeholder={placeholder} />
-        </SelectTrigger>
-        <SelectContent>
-          {options.map((option) => (
-            <SelectItem key={option.value} value={option.value}>
-              {option.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-      {errors?.[name] && (
-        <p className="text-red-600 text-xs">
-          {label || String(name)} là bắt buộc
-        </p>
-      )}
+      <Label htmlFor={name}>{label}</Label>
+      <NativeSelect
+        className={cn("w-full", message && "border-red-500")}
+        disabled={disabled}
+        id={name}
+        name={name}
+        onChange={onChange}
+        value={value}
+      >
+        <NativeSelectOption value="">{placeholder}</NativeSelectOption>
+        {options.map((option) => (
+          <NativeSelectOption key={option.value} value={option.value}>
+            {option.label}
+          </NativeSelectOption>
+        ))}
+      </NativeSelect>
+      {message && <p className="text-red-600 text-xs">{message}</p>}
     </div>
   );
 }

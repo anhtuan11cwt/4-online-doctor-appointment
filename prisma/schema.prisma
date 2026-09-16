@@ -57,8 +57,55 @@ model User {
   createdAt     DateTime  @default(now()) @map("created_at")
   updatedAt     DateTime  @updatedAt @map("updated_at")
 
-  accounts Account[]
-  sessions Session[]
+  accounts      Account[]
+  sessions      Session[]
+  doctorProfile DoctorProfile?
 
   @@map("users")
+}
+
+model DoctorProfile {
+  id            String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId        String  @unique @db.ObjectId
+  trackingNumber String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  firstName           String
+  lastName            String
+  middleName          String?
+  dateOfBirth         DateTime?
+  gender              String
+  page                String?
+
+  profilePicture      String?
+  bio                 String?
+  medicalLicense      String?
+  medicalLicenseExpiry DateTime?
+  yearsOfExperience   Int?
+  email               String?
+  phone               String?
+
+  primarySpecialization String?
+  otherSpecialties      String[] @default([])
+
+  hospitalName            String?
+  hospitalAddress         String?
+  hospitalContactNumber   String?
+  hospitalEmailAddress    String?
+  hospitalWebsite         String?
+  hoursOfOperation        String?
+  servicesOffered         String[] @default([])
+  insuranceAccepted       String?
+  languagesSpoken         String[] @default([])
+
+  educationHistory        String?
+  publishedWork           String?
+  accomplishments         String[] @default([])
+  additionalDocuments     String[] @default([])
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("doctor_profiles")
 }

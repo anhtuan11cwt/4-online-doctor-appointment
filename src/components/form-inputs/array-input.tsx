@@ -4,10 +4,12 @@ import { Plus, X } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 
 interface ArrayInputProps {
   className?: string;
+  disabled?: boolean;
   items: string[];
   label: string;
   placeholder?: string;
@@ -20,6 +22,7 @@ export default function ArrayInput({
   setItems,
   placeholder = "Nhập giá trị",
   className,
+  disabled = false,
 }: ArrayInputProps) {
   const [inputValue, setInputValue] = useState("");
 
@@ -44,32 +47,46 @@ export default function ArrayInput({
 
   return (
     <div className={cn("grid gap-2", className)}>
-      {label && (
-        <label className="font-medium text-gray-700 text-sm" htmlFor={label}>
-          {label}
-        </label>
-      )}
-      <div className="flex gap-2">
+      {label && <Label>{label}</Label>}
+      <div
+        className={cn(
+          "flex gap-2",
+          disabled && "pointer-events-none opacity-50",
+        )}
+      >
         <Input
+          disabled={disabled}
           onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           value={inputValue}
         />
-        <Button onClick={handleAdd} type="button" variant="outline">
+        <Button
+          disabled={disabled}
+          onClick={handleAdd}
+          type="button"
+          variant="outline"
+        >
           <Plus className="size-4" />
         </Button>
       </div>
       {items.length > 0 && (
-        <div className="flex flex-wrap gap-2">
+        <div
+          className={cn(
+            "flex min-w-0 flex-wrap gap-2 overflow-hidden",
+            disabled && "pointer-events-none opacity-50",
+          )}
+        >
           {items.map((item, index) => (
             <span
-              className="flex items-center gap-1 rounded-full bg-teal-100 px-3 py-1 text-sm text-teal-800 dark:bg-teal-900 dark:text-teal-100"
+              className="inline-flex min-w-0 max-w-full items-center gap-1 rounded-full bg-teal-100 px-3 py-1 text-sm text-teal-800 dark:bg-teal-900 dark:text-teal-100"
               key={item}
+              title={item}
             >
-              {item}
+              <span className="truncate">{item}</span>
               <button
-                className="ml-1 rounded-full p-0.5 hover:bg-teal-200 dark:hover:bg-teal-800"
+                className="shrink-0 rounded-full p-0.5 hover:bg-teal-200 dark:hover:bg-teal-800"
+                disabled={disabled}
                 onClick={() => handleRemove(index)}
                 type="button"
               >
