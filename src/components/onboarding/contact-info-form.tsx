@@ -5,6 +5,7 @@ import { Loader2 } from "lucide-react";
 import { useMemo, useState, useSyncExternalStore } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
+import { updateDoctorProfile } from "@/actions/onboarding";
 import { updateOnboardingData } from "@/actions/users";
 import SelectInput from "@/components/form-inputs/select-input";
 import TextInput from "@/components/form-inputs/text-input";
@@ -13,12 +14,14 @@ import { type ContactInfoSchema, contactInfoSchema } from "@/lib/validations";
 import { allWards, provinceOptions, provinces } from "@/lib/vietnam-addresses";
 
 export default function ContactInfoForm({
+  formId,
   id,
   savedData,
   title = "Thông tin liên hệ",
   description = "Vui lòng điền thông tin liên hệ của bạn",
   onComplete,
 }: {
+  formId: string;
   id: string;
   savedData?: Record<string, string>;
   title?: string;
@@ -84,13 +87,13 @@ export default function ContactInfoForm({
   const onSubmit = async (data: ContactInfoSchema) => {
     setIsLoading(true);
     try {
-      const result = await updateOnboardingData(id, "contact", data);
-      if (result?.error) {
-        toast.error(result.error);
-      } else {
-        toast.success("Lưu thông tin liên hệ thành công!");
-        onComplete?.();
-      }
+      await updateDoctorProfile(formId, {
+        ...data,
+        page: "education",
+      });
+      await updateOnboardingData(id, "contact", data);
+      toast.success("Lưu thông tin liên hệ thành công!");
+      onComplete?.();
     } catch {
       toast.error("Đã có lỗi xảy ra");
     } finally {

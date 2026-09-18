@@ -5,6 +5,7 @@ import { Loader2 } from "lucide-react";
 import { useState, useSyncExternalStore } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
+import { updateDoctorProfile } from "@/actions/onboarding";
 import { updateOnboardingData } from "@/actions/users";
 import ArrayInput from "@/components/form-inputs/array-input";
 import SelectInput from "@/components/form-inputs/select-input";
@@ -26,12 +27,14 @@ const hours = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, "0"));
 const minutes = ["00", "15", "30", "45"];
 
 export default function PracticeForm({
+  formId,
   id,
   savedData,
   title = "Thông tin thực hành",
   description = "Vui lòng điền thông tin phòng khám của bạn",
   onComplete,
 }: {
+  formId: string;
   id: string;
   savedData?: Record<string, string>;
   title?: string;
@@ -101,13 +104,13 @@ export default function PracticeForm({
         languagesSpoken: languages,
         servicesOffered: services,
       };
-      const result = await updateOnboardingData(id, "practice", formattedData);
-      if (result?.error) {
-        toast.error(result.error);
-      } else {
-        toast.success("Lưu thông tin thực hành thành công!");
-        onComplete?.();
-      }
+      await updateDoctorProfile(formId, {
+        ...formattedData,
+        page: "additional",
+      });
+      await updateOnboardingData(id, "practice", formattedData);
+      toast.success("Lưu thông tin thực hành thành công!");
+      onComplete?.();
     } catch {
       toast.error("Đã có lỗi xảy ra");
     } finally {

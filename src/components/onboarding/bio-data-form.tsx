@@ -8,6 +8,7 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { createDoctorProfile } from "@/actions/onboarding";
 import { updateOnboardingData } from "@/actions/users";
+import { useOnboardingContext } from "@/context/onboarding-context";
 import DatePickerInput from "@/components/form-inputs/date-picker-input";
 import RadioInput, {
   type RadioOption,
@@ -50,6 +51,7 @@ export default function BioDataForm({
     () => true,
     () => false,
   );
+  const { setTrackingNumber, setDoctorProfileId } = useOnboardingContext();
 
   const today = new Date();
   const maxDate = new Date(
@@ -100,7 +102,7 @@ export default function BioDataForm({
         toast.error(result.error);
       } else {
         const trackingNumber = generateTrackingNumber();
-        await createDoctorProfile({
+        const response = await createDoctorProfile({
           dateOfBirth: new Date(date),
           email: data.email,
           firstName: data.fullName.split(" ").slice(-1)[0] ?? "",
@@ -112,7 +114,11 @@ export default function BioDataForm({
           trackingNumber,
           userId,
         });
-        toast.success("Lưu thông tin cơ bản thành công!");
+        if (response.status === 201 && response.data) {
+          setTrackingNumber(response.data.trackingNumber);
+          setDoctorProfileId(response.data.id);
+        }
+        toast.success("Hồ sơ bác sĩ đã được tạo");
         onComplete?.();
       }
     } catch {

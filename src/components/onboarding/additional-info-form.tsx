@@ -5,6 +5,7 @@ import { Loader2 } from "lucide-react";
 import { useState, useSyncExternalStore } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
+import { updateDoctorProfile } from "@/actions/onboarding";
 import { updateOnboardingData } from "@/actions/users";
 import MultipleFileUpload, {
   type PendingFile,
@@ -19,12 +20,14 @@ import {
 } from "@/lib/validations";
 
 export default function AdditionalInfoForm({
+  formId,
   id,
   savedData,
   title = "Thông tin bổ sung",
   description = "Vui lòng điền thông tin bổ sung của bạn",
   onComplete,
 }: {
+  formId: string;
   id: string;
   savedData?: Record<string, string>;
   title?: string;
@@ -78,17 +81,15 @@ export default function AdditionalInfoForm({
         ...data,
         additionalDocs: uploadedDocs,
       };
-      const result = await updateOnboardingData(
-        id,
-        "additional",
-        formattedData,
-      );
-      if (result?.error) {
-        toast.error(result.error);
-      } else {
-        toast.success("Lưu thông tin bổ sung thành công!");
-        onComplete?.();
-      }
+      await updateDoctorProfile(formId, {
+        accomplishments: data.accomplishments,
+        additionalDocuments: uploadedDocs.map((doc) => doc.url),
+        educationHistory: data.educationHistory,
+        publishedWork: data.publishedWork,
+      });
+      await updateOnboardingData(id, "additional", formattedData);
+      toast.success("Lưu thông tin bổ sung thành công!");
+      onComplete?.();
     } catch {
       toast.error("Đã có lỗi xảy ra");
     } finally {

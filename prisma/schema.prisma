@@ -67,7 +67,7 @@ model User {
 model DoctorProfile {
   id            String  @id @default(auto()) @map("_id") @db.ObjectId
   userId        String  @unique @db.ObjectId
-  trackingNumber String
+  trackingNumber String  @unique
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 

@@ -16,18 +16,53 @@ export async function createDoctorProfile(data: Record<string, unknown>) {
         >[0]["data"],
         where: { userId },
       });
-      console.log("Doctor profile updated:", updated);
-      return updated;
+      return { data: updated, status: 201 };
     }
 
     const newProfile = await prisma.doctorProfile.create({
       data: data as Parameters<typeof prisma.doctorProfile.create>[0]["data"],
     });
 
-    console.log("Doctor profile created:", newProfile);
-    return newProfile;
+    return { data: newProfile, status: 201 };
   } catch (error) {
     console.error("Lỗi tạo doctor profile:", error);
-    throw error;
+    return { error: "Đã có lỗi xảy ra", status: 500 };
+  }
+}
+
+export async function updateDoctorProfile(
+  id: string,
+  data: Record<string, unknown>,
+) {
+  try {
+    const updatedProfile = await prisma.doctorProfile.update({
+      data: data as Parameters<typeof prisma.doctorProfile.update>[0]["data"],
+      where: { id },
+    });
+
+    return { data: updatedProfile, status: 201 };
+  } catch (error) {
+    console.error("Lỗi cập nhật doctor profile:", error);
+    return { error: "Đã có lỗi xảy ra", status: 500 };
+  }
+}
+
+export async function getApplicationByTrackingNumber(trackingNumber: string) {
+  try {
+    const existingProfile = await prisma.doctorProfile.findUnique({
+      where: { trackingNumber },
+    });
+
+    if (!existingProfile) {
+      return {
+        error: "Mã theo dõi không đúng",
+        status: 404,
+      };
+    }
+
+    return { data: existingProfile, status: 200 };
+  } catch (error) {
+    console.error("Lỗi tìm kiếm đơn đăng ký:", error);
+    return { error: "Đã có lỗi xảy ra", status: 500 };
   }
 }

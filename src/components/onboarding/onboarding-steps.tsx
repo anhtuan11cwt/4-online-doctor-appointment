@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
+import { useOnboardingContext } from "@/context/onboarding-context";
 import AdditionalInfoForm from "./additional-info-form";
 import AvailabilityForm from "./availability-form";
 import BioDataForm from "./bio-data-form";
@@ -36,6 +37,7 @@ export default function OnboardingSteps({
 }) {
   const toastShown = useRef(false);
   const router = useRouter();
+  const { trackingNumber, doctorProfileId } = useOnboardingContext();
 
   useEffect(() => {
     if (saved === "1" && !toastShown.current) {
@@ -68,6 +70,7 @@ export default function OnboardingSteps({
       case "profile":
         return (
           <ProfileInfoForm
+            formId={doctorProfileId}
             id={id}
             onComplete={() => {
               if (nextPage) {
@@ -82,6 +85,7 @@ export default function OnboardingSteps({
       case "contact":
         return (
           <ContactInfoForm
+            formId={doctorProfileId}
             id={id}
             onComplete={() => {
               if (nextPage) {
@@ -96,6 +100,7 @@ export default function OnboardingSteps({
       case "education":
         return (
           <EducationForm
+            formId={doctorProfileId}
             id={id}
             onComplete={() => {
               if (nextPage) {
@@ -110,6 +115,7 @@ export default function OnboardingSteps({
       case "practice":
         return (
           <PracticeForm
+            formId={doctorProfileId}
             id={id}
             onComplete={() => {
               if (nextPage) {
@@ -124,6 +130,7 @@ export default function OnboardingSteps({
       case "additional":
         return (
           <AdditionalInfoForm
+            formId={doctorProfileId}
             id={id}
             onComplete={() => {
               if (nextPage) {
@@ -182,10 +189,28 @@ export default function OnboardingSteps({
               {index + 1}. {step.title}
             </a>
           ))}
+          <a
+            className="mt-2 block truncate rounded-md bg-gray-600 px-3 py-2 text-center font-medium text-sm text-slate-100 transition-colors hover:bg-gray-800 sm:mt-4"
+            href="/onboarding/resume"
+            title="Tiếp tục đơn đăng ký"
+          >
+            Tiếp tục đơn đăng ký
+          </a>
         </nav>
       </div>
 
       <div className="col-span-12 rounded-lg bg-slate-100 p-6 sm:col-span-9 dark:bg-slate-800">
+        {trackingNumber && (
+          <div className="mb-4 border-b border-gray-200 pb-2">
+            <p className="text-sm">
+              Mã theo dõi của bạn là{" "}
+              <span className="font-bold">{trackingNumber}</span>
+            </p>
+            <p className="text-muted-foreground text-xs">
+              Sử dụng mã này để kiểm tra trạng thái hoặc tiếp tục đơn đăng ký
+            </p>
+          </div>
+        )}
         {renderForm()}
       </div>
     </div>

@@ -6,6 +6,7 @@ import { Loader2 } from "lucide-react";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
+import { updateDoctorProfile } from "@/actions/onboarding";
 import { updateOnboardingData } from "@/actions/users";
 import DatePickerInput from "@/components/form-inputs/date-picker-input";
 import ImageInput, {
@@ -19,12 +20,14 @@ import { cn } from "@/lib/utils";
 import { type ProfileInfoSchema, profileInfoSchema } from "@/lib/validations";
 
 export default function ProfileInfoForm({
+  formId,
   id,
   savedData,
   title = "Thông tin hồ sơ",
   description = "Vui lòng điền thông tin hồ sơ của bạn",
   onComplete,
 }: {
+  formId: string;
   id: string;
   savedData?: Record<string, string>;
   title?: string;
@@ -91,13 +94,10 @@ export default function ProfileInfoForm({
         medicalLicenseExpiry: format(expiry, "yyyy-MM-dd"),
         profileImage: uploadedUrl,
       };
-      const result = await updateOnboardingData(id, "profile", formattedData);
-      if (result?.error) {
-        toast.error(result.error);
-      } else {
-        toast.success("Lưu thông tin hồ sơ thành công!");
-        onComplete?.();
-      }
+      await updateDoctorProfile(formId, formattedData);
+      await updateOnboardingData(id, "profile", formattedData);
+      toast.success("Lưu thông tin hồ sơ thành công!");
+      onComplete?.();
     } catch {
       toast.error("Đã có lỗi xảy ra");
     } finally {

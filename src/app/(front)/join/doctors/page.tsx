@@ -88,7 +88,7 @@ export default function JoinDoctorsPage() {
               <div className="mt-8">
                 <CustomButton
                   className="bg-blue-600 hover:bg-blue-800"
-                  href="#"
+                  href="/register?role=DOCTOR&plan=free"
                   title="Liên kết dịch vụ"
                 />
               </div>
@@ -195,7 +195,7 @@ export default function JoinDoctorsPage() {
               <div className="mt-4">
                 <CustomButton
                   className="bg-blue-600 hover:bg-blue-800"
-                  href="#"
+                  href="/register?role=DOCTOR&plan=free"
                   title="Bắt đầu đăng ký"
                 />
               </div>
@@ -212,7 +212,7 @@ export default function JoinDoctorsPage() {
               <div className="mt-4">
                 <CustomButton
                   className="bg-gray-600 hover:bg-gray-800"
-                  href="#"
+                  href="/onboarding/resume"
                   title="Tiếp tục đăng ký"
                 />
               </div>

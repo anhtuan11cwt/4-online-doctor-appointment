@@ -5,6 +5,7 @@ import { Loader2 } from "lucide-react";
 import { useState, useSyncExternalStore } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
+import { updateDoctorProfile } from "@/actions/onboarding";
 import { updateOnboardingData } from "@/actions/users";
 import ArrayInput from "@/components/form-inputs/array-input";
 import SelectInput from "@/components/form-inputs/select-input";
@@ -15,12 +16,14 @@ import universities from "@/data/universities.json";
 import { type EducationSchema, educationSchema } from "@/lib/validations";
 
 export default function EducationForm({
+  formId,
   id,
   savedData,
   title = "Thông tin giáo dục",
   description = "Vui lòng điền thông tin giáo dục của bạn",
   onComplete,
 }: {
+  formId: string;
   id: string;
   savedData?: Record<string, string>;
   title?: string;
@@ -77,13 +80,16 @@ export default function EducationForm({
         degree: selectedDegree,
         university: selectedUniversity,
       };
-      const result = await updateOnboardingData(id, "education", formattedData);
-      if (result?.error) {
-        toast.error(result.error);
-      } else {
-        toast.success("Lưu thông tin giáo dục thành công!");
-        onComplete?.();
-      }
+      await updateDoctorProfile(formId, {
+        educationHistory: selectedUniversity,
+        graduationYear: data.graduationYear,
+        primarySpecialization: selectedDegree,
+        otherSpecialties: additionalCourses,
+        page: "practice",
+      });
+      await updateOnboardingData(id, "education", formattedData);
+      toast.success("Lưu thông tin giáo dục thành công!");
+      onComplete?.();
     } catch {
       toast.error("Đã có lỗi xảy ra");
     } finally {
