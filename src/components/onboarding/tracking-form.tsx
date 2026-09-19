@@ -11,6 +11,7 @@ import { getApplicationByTrackingNumber } from "@/actions/onboarding";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useOnboardingContext } from "@/context/onboarding-context";
 
 const formSchema = z.object({
   trackingNumber: z
@@ -22,6 +23,7 @@ const formSchema = z.object({
 type FormSchema = z.infer<typeof formSchema>;
 
 export default function TrackingForm() {
+  const { setSavedDBData } = useOnboardingContext();
   const [isLoading, setIsLoading] = useState(false);
   const [notification, setNotification] = useState("");
   const router = useRouter();
@@ -51,6 +53,7 @@ export default function TrackingForm() {
           "Mã theo dõi không đúng, vui lòng kiểm tra và nhập lại",
         );
       } else if (response.status === 200 && response.data) {
+        setSavedDBData(response.data as Record<string, unknown>);
         const userId = response.data.userId;
         const page = response.data.page || "biodata";
         toast.success("Đã tìm thấy dữ liệu, đang chuyển hướng...");

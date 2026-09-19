@@ -51,10 +51,11 @@ const periodOptions = [
   { label: "CH", value: "PM" },
 ];
 
-function parseTimeToWindow(
-  time: string,
-  _isStart: boolean,
-): { hour: string; minute: string; period: string } {
+function parseTimeToWindow(time: string): {
+  hour: string;
+  minute: string;
+  period: string;
+} {
   const [h, m] = time.split(":");
   let hour = Number.parseInt(h, 10);
   const period = hour >= 12 ? "PM" : "AM";
@@ -84,8 +85,8 @@ function initDaySchedules(
     if (!saved) {
       return { day: d.key, isActive: false, windows: [createDefaultWindow()] };
     }
-    const start = parseTimeToWindow(saved.startTime, true);
-    const end = parseTimeToWindow(saved.endTime, false);
+    const start = parseTimeToWindow(saved.startTime);
+    const end = parseTimeToWindow(saved.endTime);
     return {
       day: d.key,
       isActive: true,
@@ -133,20 +134,6 @@ type DaySchedule = {
   isActive: boolean;
   windows: TimeWindow[];
 };
-
-function _formatTime(window: TimeWindow): string {
-  let hour = Number.parseInt(window.startHour, 10);
-  if (window.startPeriod === "PM" && hour !== 12) hour += 12;
-  if (window.startPeriod === "AM" && hour === 12) hour = 0;
-  const start = `${String(hour).padStart(2, "0")}:${window.startMinute}`;
-
-  let endHour = Number.parseInt(window.endHour, 10);
-  if (window.endPeriod === "PM" && endHour !== 12) endHour += 12;
-  if (window.endPeriod === "AM" && endHour === 12) endHour = 0;
-  const end = `${String(endHour).padStart(2, "0")}:${window.endMinute}`;
-
-  return `${start}-${end}`;
-}
 
 export default function AvailabilityForm({
   id,

@@ -262,7 +262,8 @@ export const practiceInfoSchema = z.object({
   }),
   languagesSpoken: z
     .array(z.string().trim().min(1))
-    .min(1, "Phải chọn ít nhất 1 ngôn ngữ"),
+    .optional()
+    .or(z.literal("")),
   servicesOffered: z
     .array(z.string().trim().min(1))
     .min(1, "Phải cung cấp ít nhất 1 dịch vụ"),

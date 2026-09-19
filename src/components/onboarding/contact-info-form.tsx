@@ -5,35 +5,34 @@ import { Loader2 } from "lucide-react";
 import { useMemo, useState, useSyncExternalStore } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { updateDoctorProfile } from "@/actions/onboarding";
 import { updateOnboardingData } from "@/actions/users";
 import SelectInput from "@/components/form-inputs/select-input";
 import TextInput from "@/components/form-inputs/text-input";
 import { Button } from "@/components/ui/button";
+import { useOnboardingContext } from "@/context/onboarding-context";
 import { type ContactInfoSchema, contactInfoSchema } from "@/lib/validations";
 import { allWards, provinceOptions, provinces } from "@/lib/vietnam-addresses";
 
 export default function ContactInfoForm({
-  formId,
   id,
   savedData,
   title = "Thông tin liên hệ",
   description = "Vui lòng điền thông tin liên hệ của bạn",
   onComplete,
 }: {
-  formId: string;
   id: string;
   savedData?: Record<string, string>;
   title?: string;
   description?: string;
   onComplete?: () => void;
 }) {
+  const { contactData, setContactData, savedDBData } = useOnboardingContext();
   const [isLoading, setIsLoading] = useState(false);
   const [selectedProvince, setSelectedProvince] = useState<string>(
-    savedData?.city ?? "",
+    savedData?.city || contactData.city || (savedDBData?.city as string) || "",
   );
   const [selectedWard, setSelectedWard] = useState<string>(
-    savedData?.ward ?? "",
+    savedData?.ward || contactData.ward || (savedDBData?.ward as string) || "",
   );
   const isMounted = useSyncExternalStore(
     () => () => {},
@@ -60,12 +59,31 @@ export default function ContactInfoForm({
     formState: { errors },
   } = useForm<ContactInfoSchema>({
     defaultValues: {
-      city: savedData?.city ?? "",
-      emergencyContactName: savedData?.emergencyContactName ?? "",
-      emergencyContactPhone: savedData?.emergencyContactPhone ?? "",
+      city:
+        savedData?.city ||
+        contactData.city ||
+        (savedDBData?.city as string) ||
+        "",
+      emergencyContactName:
+        savedData?.emergencyContactName ||
+        contactData.emergencyContactName ||
+        (savedDBData?.emergencyContactName as string) ||
+        "",
+      emergencyContactPhone:
+        savedData?.emergencyContactPhone ||
+        contactData.emergencyContactPhone ||
+        (savedDBData?.emergencyContactPhone as string) ||
+        "",
       emergencyContactRelationship:
-        savedData?.emergencyContactRelationship ?? "",
-      ward: savedData?.ward ?? "",
+        savedData?.emergencyContactRelationship ||
+        contactData.emergencyContactRelationship ||
+        (savedDBData?.emergencyContactRelationship as string) ||
+        "",
+      ward:
+        savedData?.ward ||
+        contactData.ward ||
+        (savedDBData?.ward as string) ||
+        "",
     },
     resolver: zodResolver(contactInfoSchema),
   });
@@ -87,12 +105,9 @@ export default function ContactInfoForm({
   const onSubmit = async (data: ContactInfoSchema) => {
     setIsLoading(true);
     try {
-      await updateDoctorProfile(formId, {
-        ...data,
-        page: "education",
-      });
       await updateOnboardingData(id, "contact", data);
-      toast.success("Lưu thông tin liên hệ thành công!");
+      setContactData(data);
+      toast.success("Cập nhật thông tin liên hệ thành công!");
       onComplete?.();
     } catch {
       toast.error("Đã có lỗi xảy ra");
@@ -108,7 +123,7 @@ export default function ContactInfoForm({
           <h3 className="font-bold text-lg">{title}</h3>
           <p className="mt-1 text-muted-foreground text-sm">{description}</p>
         </div>
-        <div className="grid grid-cols-2 items-stretch gap-4">
+        <div className="grid grid-cols-1 items-stretch gap-4 sm:grid-cols-2">
           {["city", "ward", "emergency"].map((field) => (
             <div className="space-y-2" key={field}>
               <div className="h-4 w-24 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
@@ -127,7 +142,7 @@ export default function ContactInfoForm({
         <p className="mt-1 text-muted-foreground text-sm">{description}</p>
       </div>
 
-      <div className="grid grid-cols-2 items-start gap-4">
+      <div className="grid grid-cols-1 items-start gap-4 sm:grid-cols-2">
         <SelectInput
           disabled={isLoading}
           errors={errors}
@@ -183,8 +198,12 @@ export default function ContactInfoForm({
         />
       </div>
 
-      <div className="mt-8 flex justify-center">
-        <Button className="px-8" disabled={isLoading} type="submit">
+      <div className="mt-6 flex justify-center sm:mt-8">
+        <Button
+          className="w-full px-4 sm:w-auto sm:px-8"
+          disabled={isLoading}
+          type="submit"
+        >
           {isLoading && <Loader2 className="mr-2 size-4 animate-spin" />}
           {isLoading ? "Đang lưu, vui lòng chờ..." : "Lưu và tiếp tục"}
         </Button>

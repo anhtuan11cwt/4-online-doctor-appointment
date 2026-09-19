@@ -8,7 +8,6 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { createDoctorProfile } from "@/actions/onboarding";
 import { updateOnboardingData } from "@/actions/users";
-import { useOnboardingContext } from "@/context/onboarding-context";
 import DatePickerInput from "@/components/form-inputs/date-picker-input";
 import RadioInput, {
   type RadioOption,
@@ -16,6 +15,7 @@ import RadioInput, {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useOnboardingContext } from "@/context/onboarding-context";
 import { generateTrackingNumber } from "@/lib/generate-tracking";
 import { cn } from "@/lib/utils";
 import { type BioDataSchema, bioDataSchema } from "@/lib/validations";
@@ -42,16 +42,25 @@ export default function BioDataForm({
   description?: string;
   onComplete?: () => void;
 }) {
+  const {
+    setTrackingNumber,
+    setDoctorProfileId,
+    bioData,
+    setBioData,
+    savedDBData,
+  } = useOnboardingContext();
   const [isLoading, setIsLoading] = useState(false);
-  const [date, setDate] = useState<Date | undefined>(
-    savedData?.dateOfBirth ? new Date(savedData.dateOfBirth) : undefined,
-  );
+  const [date, setDate] = useState<Date | undefined>(() => {
+    if (savedData?.dateOfBirth) return new Date(savedData.dateOfBirth);
+    if (savedDBData?.dateOfBirth)
+      return new Date(savedDBData.dateOfBirth as string);
+    return undefined;
+  });
   const isMounted = useSyncExternalStore(
     () => () => {},
     () => true,
     () => false,
   );
-  const { setTrackingNumber, setDoctorProfileId } = useOnboardingContext();
 
   const today = new Date();
   const maxDate = new Date(
@@ -67,24 +76,76 @@ export default function BioDataForm({
     formState: { errors },
   } = useForm<BioDataSchema>({
     defaultValues: {
-      address: savedData?.address ?? "",
-      email: user.email,
-      fullName: user.name ?? "",
-      gender: (savedData?.gender as "male" | "female") ?? undefined,
-      phone: user.phone ?? "",
+      address:
+        savedData?.address ||
+        bioData.address ||
+        (savedDBData?.address as string) ||
+        "",
+      email:
+        savedData?.email ||
+        bioData.email ||
+        (savedDBData?.email as string) ||
+        user.email,
+      fullName:
+        savedData?.fullName ||
+        bioData.fullName ||
+        (savedDBData?.firstName as string) ||
+        user.name ||
+        "",
+      gender:
+        (savedData?.gender as "male" | "female") ||
+        bioData.gender ||
+        (savedDBData?.gender as "male" | "female") ||
+        undefined,
+      phone:
+        savedData?.phone ||
+        bioData.phone ||
+        (savedDBData?.phone as string) ||
+        user.phone ||
+        "",
     },
     resolver: zodResolver(bioDataSchema),
   });
 
   useEffect(() => {
     reset({
-      address: savedData?.address ?? "",
-      email: user.email,
-      fullName: user.name ?? "",
-      gender: (savedData?.gender as "male" | "female") ?? undefined,
-      phone: user.phone ?? "",
+      address:
+        savedData?.address ||
+        bioData.address ||
+        (savedDBData?.address as string) ||
+        "",
+      email:
+        savedData?.email ||
+        bioData.email ||
+        (savedDBData?.email as string) ||
+        user.email,
+      fullName:
+        savedData?.fullName ||
+        bioData.fullName ||
+        (savedDBData?.firstName as string) ||
+        user.name ||
+        "",
+      gender:
+        (savedData?.gender as "male" | "female") ||
+        bioData.gender ||
+        (savedDBData?.gender as "male" | "female") ||
+        undefined,
+      phone:
+        savedData?.phone ||
+        bioData.phone ||
+        (savedDBData?.phone as string) ||
+        user.phone ||
+        "",
     });
-  }, [user.email, user.name, user.phone, savedData, reset]);
+  }, [
+    user.email,
+    user.name,
+    user.phone,
+    reset,
+    bioData,
+    savedDBData,
+    savedData,
+  ]);
 
   const onSubmit = async (data: BioDataSchema) => {
     if (!date) {
@@ -118,6 +179,7 @@ export default function BioDataForm({
           setTrackingNumber(response.data.trackingNumber);
           setDoctorProfileId(response.data.id);
         }
+        setBioData(data);
         toast.success("Hồ sơ bác sĩ đã được tạo");
         onComplete?.();
       }
@@ -135,7 +197,7 @@ export default function BioDataForm({
           <h3 className="font-bold text-lg">{title}</h3>
           <p className="mt-1 text-muted-foreground text-sm">{description}</p>
         </div>
-        <div className="grid grid-cols-2 items-start gap-4">
+        <div className="grid grid-cols-1 items-start gap-4 sm:grid-cols-2">
           {["name", "email", "phone", "date"].map((field) => (
             <div className="space-y-2" key={field}>
               <div className="h-4 w-24 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
@@ -158,7 +220,7 @@ export default function BioDataForm({
         <p className="mt-1 text-muted-foreground text-sm">{description}</p>
       </div>
 
-      <div className="grid grid-cols-2 items-start gap-4">
+      <div className="grid grid-cols-1 items-start gap-4 sm:grid-cols-2">
         <div className="space-y-2">
           <Label htmlFor="fullName">
             Họ và tên <span className="text-red-500">*</span>
@@ -253,8 +315,12 @@ export default function BioDataForm({
         </div>
       </div>
 
-      <div className="mt-8 flex justify-center">
-        <Button className="px-8" disabled={isLoading} type="submit">
+      <div className="mt-6 flex justify-center sm:mt-8">
+        <Button
+          className="w-full px-4 sm:w-auto sm:px-8"
+          disabled={isLoading}
+          type="submit"
+        >
           {isLoading && <Loader2 className="mr-2 size-4 animate-spin" />}
           {isLoading ? "Đang lưu, vui lòng chờ..." : "Lưu và tiếp tục"}
         </Button>

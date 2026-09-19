@@ -6,7 +6,7 @@ import { useState, useSyncExternalStore } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { updateDoctorProfile } from "@/actions/onboarding";
-import { updateOnboardingData } from "@/actions/users";
+import { sendWelcomeEmail, updateOnboardingData } from "@/actions/users";
 import MultipleFileUpload, {
   type PendingFile,
   type UploadedFile,
@@ -14,26 +14,30 @@ import MultipleFileUpload, {
 } from "@/components/form-inputs/multiple-file-upload";
 import TextAreaInput from "@/components/form-inputs/text-area-input";
 import { Button } from "@/components/ui/button";
+import { useOnboardingContext } from "@/context/onboarding-context";
 import {
   type AdditionalInfoSchema,
   additionalInfoSchema,
 } from "@/lib/validations";
 
 export default function AdditionalInfoForm({
-  formId,
   id,
+  userEmail,
+  userName,
   savedData,
   title = "Thông tin bổ sung",
   description = "Vui lòng điền thông tin bổ sung của bạn",
   onComplete,
 }: {
-  formId: string;
   id: string;
+  userEmail: string;
+  userName: string | null;
   savedData?: Record<string, string>;
   title?: string;
   description?: string;
   onComplete?: () => void;
 }) {
+  const { additionalData, setAdditionalData } = useOnboardingContext();
   const [isLoading, setIsLoading] = useState(false);
   const [additionalDocs, setAdditionalDocs] = useState<UploadedFile[]>(() => {
     const docs = savedData?.additionalDocs;
@@ -58,9 +62,12 @@ export default function AdditionalInfoForm({
     formState: { errors },
   } = useForm<AdditionalInfoSchema>({
     defaultValues: {
-      accomplishments: savedData?.accomplishments ?? "",
-      educationHistory: savedData?.educationHistory ?? "",
-      publishedWork: savedData?.publishedWork ?? "",
+      accomplishments:
+        savedData?.accomplishments || additionalData.accomplishments || "",
+      educationHistory:
+        savedData?.educationHistory || additionalData.educationHistory || "",
+      publishedWork:
+        savedData?.publishedWork || additionalData.publishedWork || "",
     },
     resolver: zodResolver(additionalInfoSchema),
   });
@@ -81,14 +88,22 @@ export default function AdditionalInfoForm({
         ...data,
         additionalDocs: uploadedDocs,
       };
-      await updateDoctorProfile(formId, {
-        accomplishments: data.accomplishments,
+      await updateDoctorProfile(id, {
+        accomplishments: Array.isArray(data.accomplishments)
+          ? data.accomplishments
+          : data.accomplishments
+            ? [data.accomplishments]
+            : [],
         additionalDocuments: uploadedDocs.map((doc) => doc.url),
         educationHistory: data.educationHistory,
         publishedWork: data.publishedWork,
       });
       await updateOnboardingData(id, "additional", formattedData);
-      toast.success("Lưu thông tin bổ sung thành công!");
+      setAdditionalData(data);
+
+      await sendWelcomeEmail(userName || "Bác sĩ", userEmail);
+
+      toast.success("Hoàn thành hồ sơ thành công!");
       onComplete?.();
     } catch {
       toast.error("Đã có lỗi xảy ra");
@@ -165,8 +180,12 @@ export default function AdditionalInfoForm({
         />
       </div>
 
-      <div className="mt-8 flex justify-center">
-        <Button className="px-8" disabled={isLoading} type="submit">
+      <div className="mt-6 flex justify-center sm:mt-8">
+        <Button
+          className="w-full px-4 sm:w-auto sm:px-8"
+          disabled={isLoading}
+          type="submit"
+        >
           {isLoading && <Loader2 className="mr-2 size-4 animate-spin" />}
           {isLoading ? "Đang lưu, vui lòng chờ..." : "Lưu và tiếp tục"}
         </Button>

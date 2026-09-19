@@ -16,6 +16,7 @@ import {
   NativeSelect,
   NativeSelectOption,
 } from "@/components/ui/native-select";
+import { useOnboardingContext } from "@/context/onboarding-context";
 import { type PracticeInfoSchema, practiceInfoSchema } from "@/lib/validations";
 
 const insuranceOptions = [
@@ -27,32 +28,50 @@ const hours = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, "0"));
 const minutes = ["00", "15", "30", "45"];
 
 export default function PracticeForm({
-  formId,
   id,
   savedData,
   title = "Thông tin thực hành",
   description = "Vui lòng điền thông tin phòng khám của bạn",
   onComplete,
 }: {
-  formId: string;
   id: string;
   savedData?: Record<string, string>;
   title?: string;
   description?: string;
   onComplete?: () => void;
 }) {
+  const { practiceData, setPracticeData, savedDBData } = useOnboardingContext();
   const [isLoading, setIsLoading] = useState(false);
-  const [services, setServices] = useState<string[]>(
-    (savedData?.servicesOffered as unknown as string[]) ?? [],
-  );
-  const [languages, setLanguages] = useState<string[]>(
-    (savedData?.languagesSpoken as unknown as string[]) ?? [],
-  );
-  const [insuranceAccepted, setInsuranceAccepted] = useState<string>(
-    savedData?.insuranceAccepted ?? "",
+  const [services, setServices] = useState<string[]>(() => {
+    const saved = savedData?.servicesOffered as unknown as string[] | undefined;
+    if (saved && saved.length > 0) return saved;
+    if (
+      practiceData.servicesOffered &&
+      practiceData.servicesOffered.length > 0
+    ) {
+      return practiceData.servicesOffered as string[];
+    }
+    if (
+      savedDBData?.servicesOffered &&
+      Array.isArray(savedDBData.servicesOffered) &&
+      (savedDBData.servicesOffered as unknown[]).length > 0
+    ) {
+      return savedDBData.servicesOffered as string[];
+    }
+    return [];
+  });
+  const [insuranceAccepted, setInsuranceAccepted] = useState(
+    (savedData?.insuranceAccepted as string) ||
+      (practiceData.insuranceAccepted as string) ||
+      (savedDBData?.insuranceAccepted as string) ||
+      "",
   );
 
-  const savedHours = savedData?.hoursOfOperation ?? "";
+  const savedHours =
+    savedData?.hoursOfOperation ||
+    practiceData.hoursOfOperation ||
+    (savedDBData?.hoursOfOperation as string) ||
+    "";
   const [startHour, setStartHour] = useState(
     savedHours.split(" - ")[0]?.split(":")[0] ?? "08",
   );
@@ -79,17 +98,39 @@ export default function PracticeForm({
     formState: { errors },
   } = useForm<PracticeInfoSchema>({
     defaultValues: {
-      hospitalAddress: savedData?.hospitalAddress ?? "",
-      hospitalContactNumber: savedData?.hospitalContactNumber ?? "",
-      hospitalEmailAddress: savedData?.hospitalEmailAddress ?? "",
-      hospitalName: savedData?.hospitalName ?? "",
-      hospitalWebsite: savedData?.hospitalWebsite ?? "",
+      hospitalAddress:
+        savedData?.hospitalAddress ||
+        practiceData.hospitalAddress ||
+        (savedDBData?.hospitalAddress as string) ||
+        "",
+      hospitalContactNumber:
+        savedData?.hospitalContactNumber ||
+        practiceData.hospitalContactNumber ||
+        (savedDBData?.hospitalContactNumber as string) ||
+        "",
+      hospitalEmailAddress:
+        savedData?.hospitalEmailAddress ||
+        practiceData.hospitalEmailAddress ||
+        (savedDBData?.hospitalEmailAddress as string) ||
+        "",
+      hospitalName:
+        savedData?.hospitalName ||
+        practiceData.hospitalName ||
+        (savedDBData?.hospitalName as string) ||
+        "",
+      hospitalWebsite:
+        savedData?.hospitalWebsite ||
+        practiceData.hospitalWebsite ||
+        (savedDBData?.hospitalWebsite as string) ||
+        "",
       hoursOfOperation: savedHours,
-      insuranceAccepted: (savedData?.insuranceAccepted as "yes" | "no") ?? "",
-      languagesSpoken:
-        (savedData?.languagesSpoken as unknown as string[]) ?? [],
-      servicesOffered:
-        (savedData?.servicesOffered as unknown as string[]) ?? [],
+      insuranceAccepted:
+        (savedData?.insuranceAccepted as "yes" | "no") ||
+        (practiceData.insuranceAccepted as "yes" | "no") ||
+        (savedDBData?.insuranceAccepted as "yes" | "no") ||
+        undefined,
+      languagesSpoken: [],
+      servicesOffered: services,
     },
     resolver: zodResolver(practiceInfoSchema),
   });
@@ -101,15 +142,15 @@ export default function PracticeForm({
         ...data,
         hoursOfOperation: `${startHour}:${startMinute} - ${endHour}:${endMinute}`,
         insuranceAccepted,
-        languagesSpoken: languages,
         servicesOffered: services,
       };
-      await updateDoctorProfile(formId, {
+      await updateDoctorProfile(id, {
         ...formattedData,
         page: "additional",
       });
       await updateOnboardingData(id, "practice", formattedData);
-      toast.success("Lưu thông tin thực hành thành công!");
+      setPracticeData(data);
+      toast.success("Cập nhật thông tin thực hành thành công!");
       onComplete?.();
     } catch {
       toast.error("Đã có lỗi xảy ra");
@@ -125,7 +166,7 @@ export default function PracticeForm({
           <h3 className="font-bold text-lg">{title}</h3>
           <p className="mt-1 text-muted-foreground text-sm">{description}</p>
         </div>
-        <div className="grid grid-cols-2 items-start gap-4">
+        <div className="grid grid-cols-1 items-start gap-4 sm:grid-cols-2">
           {["hospital", "address", "contact", "email"].map((field) => (
             <div className="space-y-2" key={field}>
               <div className="h-4 w-24 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
@@ -144,7 +185,7 @@ export default function PracticeForm({
         <p className="mt-1 text-muted-foreground text-sm">{description}</p>
       </div>
 
-      <div className="grid grid-cols-2 items-start gap-4">
+      <div className="grid grid-cols-1 items-start gap-4 sm:grid-cols-2">
         <TextInput
           disabled={isLoading}
           errors={errors}
@@ -191,7 +232,7 @@ export default function PracticeForm({
 
         <div className="grid gap-2">
           <Label>Giờ hoạt động</Label>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <NativeSelect
               disabled={isLoading}
               onChange={(e) => {
@@ -295,9 +336,9 @@ export default function PracticeForm({
           label="Bảo hiểm được chấp nhận"
           name="insuranceAccepted"
           onChange={(e) => {
-            const val = e.target.value;
+            const val = e.target.value as "yes" | "no";
             setInsuranceAccepted(val);
-            setValue("insuranceAccepted", val as "yes" | "no", {
+            setValue("insuranceAccepted", val, {
               shouldValidate: true,
             });
           }}
@@ -316,22 +357,14 @@ export default function PracticeForm({
             setValue("servicesOffered", items, { shouldValidate: true });
           }}
         />
-
-        <ArrayInput
-          className="col-span-full"
-          disabled={isLoading}
-          items={languages}
-          label="Ngôn ngữ sử dụng"
-          placeholder="Nhập ngôn ngữ và nhấn Enter"
-          setItems={(items) => {
-            setLanguages(items);
-            setValue("languagesSpoken", items, { shouldValidate: true });
-          }}
-        />
       </div>
 
-      <div className="mt-8 flex justify-center">
-        <Button className="px-8" disabled={isLoading} type="submit">
+      <div className="mt-6 flex justify-center sm:mt-8">
+        <Button
+          className="w-full px-4 sm:w-auto sm:px-8"
+          disabled={isLoading}
+          type="submit"
+        >
           {isLoading && <Loader2 className="mr-2 size-4 animate-spin" />}
           {isLoading ? "Đang lưu, vui lòng chờ..." : "Lưu và tiếp tục"}
         </Button>

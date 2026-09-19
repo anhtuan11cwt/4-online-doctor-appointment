@@ -16,32 +16,39 @@ import TextAreaInput from "@/components/form-inputs/text-area-input";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useOnboardingContext } from "@/context/onboarding-context";
 import { cn } from "@/lib/utils";
 import { type ProfileInfoSchema, profileInfoSchema } from "@/lib/validations";
 
 export default function ProfileInfoForm({
-  formId,
   id,
   savedData,
   title = "Thông tin hồ sơ",
   description = "Vui lòng điền thông tin hồ sơ của bạn",
   onComplete,
 }: {
-  formId: string;
   id: string;
   savedData?: Record<string, string>;
   title?: string;
   description?: string;
   onComplete?: () => void;
 }) {
+  const { profileData, setProfileData, savedDBData } = useOnboardingContext();
   const [isLoading, setIsLoading] = useState(false);
-  const [expiry, setExpiry] = useState<Date | undefined>(
-    savedData?.medicalLicenseExpiry
-      ? new Date(savedData.medicalLicenseExpiry)
-      : undefined,
-  );
+  const [expiry, setExpiry] = useState<Date | undefined>(() => {
+    if (savedData?.medicalLicenseExpiry)
+      return new Date(savedData.medicalLicenseExpiry);
+    if (savedDBData?.medicalLicenseExpiry)
+      return new Date(savedDBData.medicalLicenseExpiry as string);
+    return undefined;
+  });
   const [file, setFile] = useState<File | null>(null);
-  const [imageUrl, setImageUrl] = useState(savedData?.profileImage ?? "");
+  const [imageUrl, setImageUrl] = useState(
+    () =>
+      (savedData?.profileImage as string) ||
+      (savedDBData?.profilePicture as string) ||
+      "",
+  );
   const isMounted = useSyncExternalStore(
     () => () => {},
     () => true,
@@ -55,19 +62,27 @@ export default function ProfileInfoForm({
     formState: { errors },
   } = useForm<ProfileInfoSchema>({
     defaultValues: {
-      bio: savedData?.bio ?? "",
-      medicalLicense: savedData?.medicalLicense ?? "",
+      bio:
+        savedData?.bio || profileData.bio || (savedDBData?.bio as string) || "",
+      medicalLicense:
+        savedData?.medicalLicense ||
+        profileData.medicalLicense ||
+        (savedDBData?.medicalLicense as string) ||
+        "",
     },
-    mode: "all",
     resolver: zodResolver(profileInfoSchema),
   });
 
   useEffect(() => {
-    reset({
-      bio: savedData?.bio ?? "",
-      medicalLicense: savedData?.medicalLicense ?? "",
-    });
-  }, [savedData, reset]);
+    const newBio =
+      savedData?.bio || profileData.bio || (savedDBData?.bio as string) || "";
+    const newLicense =
+      savedData?.medicalLicense ||
+      profileData.medicalLicense ||
+      (savedDBData?.medicalLicense as string) ||
+      "";
+    reset({ bio: newBio, medicalLicense: newLicense });
+  }, [reset, profileData, savedDBData, savedData]);
 
   const onSubmit = async (data: ProfileInfoSchema) => {
     if (!expiry) {
@@ -80,12 +95,15 @@ export default function ProfileInfoForm({
     }
     setIsLoading(true);
     try {
-      let uploadedUrl = savedData?.profileImage ?? "";
+      let uploadedUrl =
+        (savedData?.profileImage as string) ||
+        (savedDBData?.profilePicture as string) ||
+        "";
       if (file) {
         uploadedUrl = await uploadToCloudinary(
           file,
           "doctorProfile",
-          savedData?.profileImage || undefined,
+          uploadedUrl || undefined,
         );
         setImageUrl(uploadedUrl);
       }
@@ -94,8 +112,13 @@ export default function ProfileInfoForm({
         medicalLicenseExpiry: format(expiry, "yyyy-MM-dd"),
         profileImage: uploadedUrl,
       };
-      await updateDoctorProfile(formId, formattedData);
+      await updateDoctorProfile(id, {
+        ...data,
+        medicalLicenseExpiry: expiry,
+        profilePicture: uploadedUrl,
+      });
       await updateOnboardingData(id, "profile", formattedData);
+      setProfileData(data);
       toast.success("Lưu thông tin hồ sơ thành công!");
       onComplete?.();
     } catch {
@@ -112,7 +135,7 @@ export default function ProfileInfoForm({
           <h3 className="font-bold text-lg">{title}</h3>
           <p className="mt-1 text-muted-foreground text-sm">{description}</p>
         </div>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {["license", "expiry", "bio"].map((field) => (
             <div className="space-y-2" key={field}>
               <div className="h-4 w-24 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
@@ -131,7 +154,7 @@ export default function ProfileInfoForm({
         <p className="mt-1 text-muted-foreground text-sm">{description}</p>
       </div>
 
-      <div className="grid grid-cols-2 items-start gap-4">
+      <div className="grid grid-cols-1 items-start gap-4 sm:grid-cols-2">
         <div className="space-y-2">
           <Label htmlFor="medicalLicense">
             Số giấy phép hành nghề <span className="text-red-500">*</span>
@@ -181,8 +204,12 @@ export default function ProfileInfoForm({
         />
       </div>
 
-      <div className="mt-8 flex justify-center">
-        <Button className="px-8" disabled={isLoading} type="submit">
+      <div className="mt-6 flex justify-center sm:mt-8">
+        <Button
+          className="w-full px-4 sm:w-auto sm:px-8"
+          disabled={isLoading}
+          type="submit"
+        >
           {isLoading && <Loader2 className="mr-2 size-4 animate-spin" />}
           {isLoading ? "Đang lưu, vui lòng chờ..." : "Lưu và tiếp tục"}
         </Button>

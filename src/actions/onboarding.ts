@@ -31,13 +31,18 @@ export async function createDoctorProfile(data: Record<string, unknown>) {
 }
 
 export async function updateDoctorProfile(
-  id: string,
+  userId: string,
   data: Record<string, unknown>,
 ) {
   try {
+    const updateData = { ...data };
+    delete updateData.id;
+    delete updateData.userId;
     const updatedProfile = await prisma.doctorProfile.update({
-      data: data as Parameters<typeof prisma.doctorProfile.update>[0]["data"],
-      where: { id },
+      data: updateData as Parameters<
+        typeof prisma.doctorProfile.update
+      >[0]["data"],
+      where: { userId },
     });
 
     return { data: updatedProfile, status: 201 };
@@ -63,6 +68,23 @@ export async function getApplicationByTrackingNumber(trackingNumber: string) {
     return { data: existingProfile, status: 200 };
   } catch (error) {
     console.error("Lỗi tìm kiếm đơn đăng ký:", error);
+    return { error: "Đã có lỗi xảy ra", status: 500 };
+  }
+}
+
+export async function getDoctorProfileById(userId: string) {
+  try {
+    const profile = await prisma.doctorProfile.findUnique({
+      where: { userId },
+    });
+
+    if (!profile) {
+      return { data: null, status: 404 };
+    }
+
+    return { data: profile, status: 200 };
+  } catch (error) {
+    console.error("Lỗi lấy doctor profile:", error);
     return { error: "Đã có lỗi xảy ra", status: 500 };
   }
 }

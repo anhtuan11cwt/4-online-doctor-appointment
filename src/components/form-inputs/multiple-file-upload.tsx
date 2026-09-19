@@ -1,7 +1,7 @@
 "use client";
 
 import { FileText, Upload, X } from "lucide-react";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
@@ -40,7 +40,6 @@ export default function MultipleFileUpload({
   setPendingFiles,
   disabled = false,
 }: MultipleFileUploadProps) {
-  const [isUploading, _setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleSelectFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -174,7 +173,6 @@ export default function MultipleFileUpload({
         <button
           className={cn(
             "flex flex-1 items-center justify-center gap-2 rounded-md border-2 border-dashed p-4 transition-colors hover:border-teal-500 hover:bg-teal-50",
-            isUploading && "pointer-events-none opacity-50",
             files.length + pendingFiles.length >= maxFiles &&
               "pointer-events-none opacity-50",
           )}
@@ -183,9 +181,7 @@ export default function MultipleFileUpload({
         >
           <Upload className="size-5 text-muted-foreground" />
           <span className="text-muted-foreground text-sm">
-            {isUploading
-              ? "Đang tải..."
-              : `Tải lên file PDF (tối đa ${maxFiles} file)`}
+            {`Tải lên file PDF (tối đa ${maxFiles} file)`}
           </span>
         </button>
         {(files.length > 0 || pendingFiles.length > 0) && (

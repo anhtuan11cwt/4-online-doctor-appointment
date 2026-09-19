@@ -11,32 +11,61 @@ import ArrayInput from "@/components/form-inputs/array-input";
 import SelectInput from "@/components/form-inputs/select-input";
 import TextInput from "@/components/form-inputs/text-input";
 import { Button } from "@/components/ui/button";
+import { useOnboardingContext } from "@/context/onboarding-context";
 import degrees from "@/data/degrees.json";
 import universities from "@/data/universities.json";
 import { type EducationSchema, educationSchema } from "@/lib/validations";
 
 export default function EducationForm({
-  formId,
   id,
   savedData,
   title = "Thông tin giáo dục",
   description = "Vui lòng điền thông tin giáo dục của bạn",
   onComplete,
 }: {
-  formId: string;
   id: string;
   savedData?: Record<string, string>;
   title?: string;
   description?: string;
   onComplete?: () => void;
 }) {
+  const { educationData, setEducationData, savedDBData } =
+    useOnboardingContext();
   const [isLoading, setIsLoading] = useState(false);
-  const [additionalCourses, setAdditionalCourses] = useState<string[]>(
-    (savedData?.additionalCourses as unknown as string[]) ?? [],
+  const [additionalCourses, setAdditionalCourses] = useState<string[]>(() => {
+    const saved = savedData?.additionalCourses as unknown as
+      | string[]
+      | undefined;
+    if (saved && saved.length > 0) return saved;
+    if (
+      educationData.additionalCourses &&
+      educationData.additionalCourses.length > 0
+    ) {
+      return educationData.additionalCourses as string[];
+    }
+    if (
+      savedDBData?.otherSpecialties &&
+      Array.isArray(savedDBData.otherSpecialties) &&
+      (savedDBData.otherSpecialties as unknown[]).length > 0
+    ) {
+      return savedDBData.otherSpecialties as string[];
+    }
+    return [];
+  });
+  const [selectedDegree, setSelectedDegree] = useState(
+    savedData?.degree ||
+      educationData.degree ||
+      (savedDBData?.primarySpecialization as string) ||
+      "",
   );
-  const [selectedDegree, setSelectedDegree] = useState(savedData?.degree ?? "");
   const [selectedUniversity, setSelectedUniversity] = useState(
-    savedData?.university ?? "",
+    savedData?.university ||
+      educationData.university ||
+      (savedDBData?.educationHistory as string) ||
+      "",
+  );
+  const [graduationYearValue, setGraduationYearValue] = useState(
+    String(savedData?.graduationYear ?? educationData.graduationYear ?? ""),
   );
   const isMounted = useSyncExternalStore(
     () => () => {},
@@ -50,11 +79,21 @@ export default function EducationForm({
     formState: { errors },
   } = useForm<EducationSchema>({
     defaultValues: {
-      degree: savedData?.degree ?? "",
+      degree:
+        savedData?.degree ||
+        educationData.degree ||
+        (savedDBData?.primarySpecialization as string) ||
+        "",
       graduationYear: savedData?.graduationYear
         ? Number(savedData.graduationYear)
-        : undefined,
-      university: savedData?.university ?? "",
+        : educationData.graduationYear ||
+          (savedDBData?.graduationYear as number) ||
+          undefined,
+      university:
+        savedData?.university ||
+        educationData.university ||
+        (savedDBData?.educationHistory as string) ||
+        "",
     },
     resolver: zodResolver(educationSchema),
   });
@@ -80,14 +119,14 @@ export default function EducationForm({
         degree: selectedDegree,
         university: selectedUniversity,
       };
-      await updateDoctorProfile(formId, {
+      await updateDoctorProfile(id, {
         educationHistory: selectedUniversity,
-        graduationYear: data.graduationYear,
-        primarySpecialization: selectedDegree,
         otherSpecialties: additionalCourses,
         page: "practice",
+        primarySpecialization: selectedDegree,
       });
       await updateOnboardingData(id, "education", formattedData);
+      setEducationData(data);
       toast.success("Lưu thông tin giáo dục thành công!");
       onComplete?.();
     } catch {
@@ -104,7 +143,7 @@ export default function EducationForm({
           <h3 className="font-bold text-lg">{title}</h3>
           <p className="mt-1 text-muted-foreground text-sm">{description}</p>
         </div>
-        <div className="grid grid-cols-2 items-start gap-4">
+        <div className="grid grid-cols-1 items-start gap-4 sm:grid-cols-2">
           {["degree", "university", "year"].map((field) => (
             <div className="space-y-2" key={field}>
               <div className="h-4 w-24 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
@@ -123,7 +162,7 @@ export default function EducationForm({
         <p className="mt-1 text-muted-foreground text-sm">{description}</p>
       </div>
 
-      <div className="grid grid-cols-2 items-start gap-4">
+      <div className="grid grid-cols-1 items-start gap-4 sm:grid-cols-2">
         <SelectInput
           disabled={isLoading}
           errors={errors}
@@ -157,6 +196,7 @@ export default function EducationForm({
           name="graduationYear"
           onChange={(e) => {
             const val = e.target.value;
+            setGraduationYearValue(val);
             setValue(
               "graduationYear",
               val === "" ? (undefined as unknown as number) : Number(val),
@@ -164,7 +204,7 @@ export default function EducationForm({
             );
           }}
           type="number"
-          value={String(savedData?.graduationYear ?? "")}
+          value={graduationYearValue}
         />
 
         <ArrayInput
@@ -177,8 +217,12 @@ export default function EducationForm({
         />
       </div>
 
-      <div className="mt-8 flex justify-center">
-        <Button className="px-8" disabled={isLoading} type="submit">
+      <div className="mt-6 flex justify-center sm:mt-8">
+        <Button
+          className="w-full px-4 sm:w-auto sm:px-8"
+          disabled={isLoading}
+          type="submit"
+        >
           {isLoading && <Loader2 className="mr-2 size-4 animate-spin" />}
           {isLoading ? "Đang lưu, vui lòng chờ..." : "Lưu và tiếp tục"}
         </Button>

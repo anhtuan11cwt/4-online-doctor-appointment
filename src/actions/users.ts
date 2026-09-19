@@ -13,6 +13,47 @@ const transporter = nodemailer.createTransport({
   service: "gmail",
 });
 
+function getWelcomeEmailHtml(firstName: string): string {
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body style="margin:0;padding:0;background-color:#f3f4f6;font-family:sans-serif;">
+      <div style="max-width:600px;margin:40px auto;background:#ffffff;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);overflow:hidden;">
+        <div style="background:#059669;padding:32px;text-align:center;">
+          <h1 style="color:#ffffff;margin:0;font-size:24px;">Medical App</h1>
+        </div>
+        <div style="padding:32px;">
+          <h2 style="color:#111827;margin:0 0 16px;font-size:20px;">Chào mừng ${firstName}!</h2>
+          <p style="color:#6b7280;margin:0 0 24px;line-height:1.6;">
+            Chúc mừng bạn đã hoàn tất quá trình đăng ký hồ sơ bác sĩ tại Medical App. Hồ sơ của bạn đã được tiếp nhận và đang trong quá trình phê duyệt.
+          </p>
+          <p style="color:#6b7280;margin:0 0 24px;line-height:1.6;">
+            Bạn có thể đăng nhập vào hệ thống để quản lý hồ sơ và bắt đầu cung cấp dịch vụ y tế.
+          </p>
+          <div style="text-align:center;margin:24px 0;">
+            <a href="${process.env.NEXTAUTH_URL || "http://localhost:3000"}/login" style="display:inline-block;background:#059669;color:#ffffff;font-size:16px;font-weight:bold;padding:14px 40px;border-radius:8px;text-decoration:none;">
+              Đăng nhập ngay
+            </a>
+          </div>
+          <p style="color:#9ca3af;font-size:13px;text-align:center;margin-top:24px;">
+            Nếu bạn có bất kỳ thắc mắc nào, vui lòng liên hệ bộ phận hỗ trợ của chúng tôi.
+          </p>
+        </div>
+        <div style="background:#f9fafb;padding:16px;text-align:center;border-top:1px solid #e5e7eb;">
+          <p style="color:#9ca3af;font-size:12px;margin:0;">
+            © 2024 Medical App. Tất cả quyền được bảo lưu.
+          </p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
 function getVerificationEmailHtml(firstName: string, token: string): string {
   return `
     <!DOCTYPE html>
@@ -49,6 +90,21 @@ function getVerificationEmailHtml(firstName: string, token: string): string {
     </body>
     </html>
   `;
+}
+
+export async function sendWelcomeEmail(firstName: string, email: string) {
+  try {
+    await transporter.sendMail({
+      from: `"Medical App" <${process.env.GMAIL_USER}>`,
+      html: getWelcomeEmailHtml(firstName),
+      subject: "Chào mừng bạn đến với Medical App!",
+      to: email,
+    });
+    return { success: true };
+  } catch (error) {
+    console.error("Lỗi gửi email chào mừng:", error);
+    return { error: "Không thể gửi email chào mừng", success: false };
+  }
 }
 
 export async function getUserById(id: string) {
