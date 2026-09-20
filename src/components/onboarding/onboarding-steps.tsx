@@ -36,7 +36,7 @@ export default function OnboardingSteps({
 }) {
   const toastShown = useRef(false);
   const router = useRouter();
-  const { trackingNumber } = useOnboardingContext();
+  const { trackingNumber, savedDBData } = useOnboardingContext();
 
   useEffect(() => {
     if (saved === "1" && !toastShown.current) {
@@ -132,8 +132,6 @@ export default function OnboardingSteps({
             savedData={
               onboardingData.additional as Record<string, string> | undefined
             }
-            userEmail={user.email}
-            userName={user.name}
           />
         );
       default:
@@ -148,19 +146,19 @@ export default function OnboardingSteps({
   };
 
   return (
-    <div className="grid min-h-[80vh] grid-cols-12 gap-4">
-      <div className="col-span-12 h-full rounded-lg bg-slate-200 p-3 sm:col-span-3 dark:bg-slate-700">
-        <h2 className="mb-4 px-2 font-bold text-slate-700 text-sm uppercase tracking-wider dark:text-slate-200">
+    <div className="grid min-h-[60vh] grid-cols-12 gap-4 sm:min-h-[80vh]">
+      <div className="col-span-12 h-full rounded-lg bg-slate-200 p-2 sm:col-span-3 sm:p-3 dark:bg-slate-900">
+        <h2 className="mb-2 px-2 font-bold text-slate-700 text-xs uppercase tracking-wider sm:mb-4 sm:text-sm dark:text-slate-300">
           Các bước
         </h2>
         <nav className="flex flex-row gap-1 overflow-x-auto sm:flex-col sm:overflow-x-visible">
           {steps.map((step, index) => (
             <a
               className={cn(
-                "block truncate rounded-md px-3 py-2 font-medium text-sm transition-colors",
+                "block truncate rounded-md px-2 py-1.5 font-medium text-xs transition-colors sm:px-3 sm:py-2 sm:text-sm",
                 step.page === page
                   ? "bg-teal-800 text-slate-100"
-                  : "text-slate-600 hover:bg-slate-300 dark:text-slate-300 dark:hover:bg-slate-600",
+                  : "text-slate-600 hover:bg-slate-300 dark:text-slate-400 dark:hover:bg-slate-700",
               )}
               href={`/onboarding/${id}?page=${step.page}`}
               key={step.page}
@@ -170,7 +168,7 @@ export default function OnboardingSteps({
             </a>
           ))}
           <Link
-            className="mt-2 block truncate rounded-md bg-gray-600 px-3 py-2 text-center font-medium text-slate-100 text-sm transition-colors hover:bg-gray-800 sm:mt-4"
+            className="mt-2 block truncate rounded-md bg-gray-600 px-2 py-1.5 text-center font-medium text-slate-100 text-xs transition-colors hover:bg-gray-800 sm:mt-4 sm:px-3 sm:py-2 sm:text-sm"
             href="/onboarding/resume"
             title="Tiếp tục đơn đăng ký"
           >
@@ -179,12 +177,14 @@ export default function OnboardingSteps({
         </nav>
       </div>
 
-      <div className="col-span-12 rounded-lg bg-slate-100 p-4 sm:col-span-9 sm:p-6 dark:bg-slate-800">
-        {trackingNumber && (
-          <div className="mb-4 border-gray-200 border-b pb-2">
-            <p className="text-sm">
+      <div className="col-span-12 rounded-lg bg-slate-100 p-3 sm:col-span-9 sm:p-6 dark:bg-slate-800">
+        {(trackingNumber || (savedDBData.trackingNumber as string)) && (
+          <div className="mb-3 border-slate-200 border-b pb-2 sm:mb-4 dark:border-slate-600">
+            <p className="text-xs sm:text-sm dark:text-slate-300">
               Mã theo dõi của bạn là{" "}
-              <span className="font-bold">{trackingNumber}</span>
+              <span className="font-bold">
+                {trackingNumber || (savedDBData.trackingNumber as string)}
+              </span>
             </p>
             <p className="text-muted-foreground text-xs">
               Sử dụng mã này để kiểm tra trạng thái hoặc tiếp tục đơn đăng ký

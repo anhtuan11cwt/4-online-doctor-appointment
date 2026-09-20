@@ -1,12 +1,13 @@
 "use client";
 
+import type { LucideIcon } from "lucide-react";
 import {
   CalendarDays,
-  Globe,
+  CheckSquare,
   LayoutDashboard,
   LogOut,
+  Mail,
   Settings,
-  Stethoscope,
   Users,
 } from "lucide-react";
 import Image from "next/image";
@@ -23,47 +24,63 @@ import {
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 
-const sidebarLinks = [
-  {
-    icon: LayoutDashboard,
-    name: "Dashboard",
-    path: "/dashboard",
-  },
-  {
-    icon: CalendarDays,
-    name: "Lịch hẹn",
-    path: "/dashboard/appointments",
-  },
-  {
-    icon: Stethoscope,
-    name: "Bác sĩ",
-    path: "/dashboard/doctors",
-  },
-  {
-    icon: Users,
-    name: "Bệnh nhân",
-    path: "/dashboard/patients",
-  },
-  {
-    badgeCount: 6,
-    icon: Settings,
-    name: "Cài đặt",
-    path: "/dashboard/settings",
-  },
-  {
-    icon: Globe,
-    name: "Trang chủ",
-    path: "/",
-  },
-];
+type SidebarLink = {
+  icon: LucideIcon;
+  name: string;
+  path: string;
+};
 
-export default function AppSidebar() {
+const roles: Record<string, SidebarLink[]> = {
+  ADMIN: [
+    { icon: LayoutDashboard, name: "Dashboard", path: "/dashboard" },
+    { icon: Users, name: "Bác sĩ", path: "/dashboard/doctors" },
+    { icon: Users, name: "Bệnh nhân", path: "/dashboard/patients" },
+    {
+      icon: CalendarDays,
+      name: "Lịch hẹn",
+      path: "/dashboard/appointments",
+    },
+    { icon: Settings, name: "Cài đặt", path: "/dashboard/settings" },
+  ],
+  DOCTOR: [
+    { icon: LayoutDashboard, name: "Dashboard", path: "/dashboard" },
+    {
+      icon: CalendarDays,
+      name: "Lịch hẹn",
+      path: "/dashboard/doctor/appointments",
+    },
+    { icon: Users, name: "Bệnh nhân", path: "/dashboard/doctor/patients" },
+    { icon: Mail, name: "Hộp thư", path: "/dashboard/doctor/inbox" },
+    { icon: CheckSquare, name: "Công việc", path: "/dashboard/doctor/tasks" },
+    { icon: Settings, name: "Cài đặt", path: "/dashboard/doctor/settings" },
+  ],
+  USER: [
+    { icon: LayoutDashboard, name: "Dashboard", path: "/dashboard" },
+    {
+      icon: CalendarDays,
+      name: "Lịch hẹn",
+      path: "/dashboard/appointments",
+    },
+    { icon: Settings, name: "Cài đặt", path: "/dashboard/settings" },
+  ],
+};
+
+interface AppSidebarProps {
+  session?: {
+    user?: {
+      role?: string;
+    };
+  };
+}
+
+export default function AppSidebar({ session }: AppSidebarProps) {
   const pathname = usePathname();
+  const role = session?.user?.role || "USER";
+  const sidebarLinks = roles[role] || roles.USER;
 
   return (
     <Sidebar>
@@ -93,9 +110,6 @@ export default function AppSidebar() {
                       <Icon className="size-4" />
                       <span>{item.name}</span>
                     </SidebarMenuButton>
-                    {item.badgeCount && (
-                      <SidebarMenuBadge>{item.badgeCount}</SidebarMenuBadge>
-                    )}
                   </SidebarMenuItem>
                 );
               })}

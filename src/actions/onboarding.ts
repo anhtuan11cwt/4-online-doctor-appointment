@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/db";
+import { sendWelcomeEmail } from "./users";
 
 export async function createDoctorProfile(data: Record<string, unknown>) {
   try {
@@ -85,6 +86,46 @@ export async function getDoctorProfileById(userId: string) {
     return { data: profile, status: 200 };
   } catch (error) {
     console.error("Lỗi lấy doctor profile:", error);
+    return { error: "Đã có lỗi xảy ra", status: 500 };
+  }
+}
+
+export async function completeDoctorProfile(
+  userId: string,
+  data: Record<string, unknown>,
+) {
+  try {
+    const existingProfile = await prisma.doctorProfile.findUnique({
+      where: { userId },
+    });
+
+    if (!existingProfile) {
+      return { data: null, error: "Không tìm thấy hồ sơ", status: 404 };
+    }
+
+    const firstName = existingProfile.firstName as string;
+    const email = existingProfile.email as string;
+
+    await sendWelcomeEmail(firstName, email, {
+      message:
+        "Cảm ơn bạn đã tham gia Online Doctors. Chúng tôi rất vui khi có bạn trên nền tảng.",
+      subject: "Chào mừng bạn đến với Online Doctors!",
+    });
+
+    const updateData = { ...data };
+    delete updateData.id;
+    delete updateData.userId;
+
+    const updatedProfile = await prisma.doctorProfile.update({
+      data: updateData as Parameters<
+        typeof prisma.doctorProfile.update
+      >[0]["data"],
+      where: { userId },
+    });
+
+    return { data: updatedProfile, status: 201 };
+  } catch (error) {
+    console.error("Lỗi hoàn tất hồ sơ:", error);
     return { error: "Đã có lỗi xảy ra", status: 500 };
   }
 }

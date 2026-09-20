@@ -5,8 +5,8 @@ import { Loader2 } from "lucide-react";
 import { useState, useSyncExternalStore } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { updateDoctorProfile } from "@/actions/onboarding";
-import { sendWelcomeEmail, updateOnboardingData } from "@/actions/users";
+import { completeDoctorProfile } from "@/actions/onboarding";
+import { updateOnboardingData } from "@/actions/users";
 import MultipleFileUpload, {
   type PendingFile,
   type UploadedFile,
@@ -22,16 +22,12 @@ import {
 
 export default function AdditionalInfoForm({
   id,
-  userEmail,
-  userName,
   savedData,
   title = "Thông tin bổ sung",
   description = "Vui lòng điền thông tin bổ sung của bạn",
   onComplete,
 }: {
   id: string;
-  userEmail: string;
-  userName: string | null;
   savedData?: Record<string, string>;
   title?: string;
   description?: string;
@@ -88,7 +84,8 @@ export default function AdditionalInfoForm({
         ...data,
         additionalDocs: uploadedDocs,
       };
-      await updateDoctorProfile(id, {
+
+      const response = await completeDoctorProfile(id, {
         accomplishments: Array.isArray(data.accomplishments)
           ? data.accomplishments
           : data.accomplishments
@@ -98,13 +95,16 @@ export default function AdditionalInfoForm({
         educationHistory: data.educationHistory,
         publishedWork: data.publishedWork,
       });
+
       await updateOnboardingData(id, "additional", formattedData);
       setAdditionalData(data);
 
-      await sendWelcomeEmail(userName || "Bác sĩ", userEmail);
-
-      toast.success("Hoàn thành hồ sơ thành công!");
-      onComplete?.();
+      if (response.status === 201) {
+        toast.success("Hoàn thành hồ sơ thành công!");
+        onComplete?.();
+      } else {
+        toast.error(response.error || "Đã có lỗi xảy ra");
+      }
     } catch {
       toast.error("Đã có lỗi xảy ra");
     } finally {
@@ -115,8 +115,8 @@ export default function AdditionalInfoForm({
   if (!isMounted) {
     return (
       <div className="space-y-4">
-        <div className="mb-6 border-b pb-4">
-          <h3 className="font-bold text-lg">{title}</h3>
+        <div className="mb-6 border-b pb-4 dark:border-slate-600">
+          <h3 className="font-bold text-lg dark:text-slate-200">{title}</h3>
           <p className="mt-1 text-muted-foreground text-sm">{description}</p>
         </div>
         <div className="space-y-4">
@@ -133,8 +133,8 @@ export default function AdditionalInfoForm({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <div className="mb-6 border-b pb-4">
-        <h3 className="font-bold text-lg">{title}</h3>
+      <div className="mb-6 border-b pb-4 dark:border-slate-600">
+        <h3 className="font-bold text-lg dark:text-slate-200">{title}</h3>
         <p className="mt-1 text-muted-foreground text-sm">{description}</p>
       </div>
 
@@ -187,7 +187,7 @@ export default function AdditionalInfoForm({
           type="submit"
         >
           {isLoading && <Loader2 className="mr-2 size-4 animate-spin" />}
-          {isLoading ? "Đang lưu, vui lòng chờ..." : "Lưu và tiếp tục"}
+          {isLoading ? "Đang lưu, vui lòng chờ..." : "Hoàn tất"}
         </Button>
       </div>
     </form>

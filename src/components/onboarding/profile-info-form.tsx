@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { Loader2 } from "lucide-react";
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { updateDoctorProfile } from "@/actions/onboarding";
@@ -58,7 +58,6 @@ export default function ProfileInfoForm({
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors },
   } = useForm<ProfileInfoSchema>({
     defaultValues: {
@@ -72,17 +71,6 @@ export default function ProfileInfoForm({
     },
     resolver: zodResolver(profileInfoSchema),
   });
-
-  useEffect(() => {
-    const newBio =
-      savedData?.bio || profileData.bio || (savedDBData?.bio as string) || "";
-    const newLicense =
-      savedData?.medicalLicense ||
-      profileData.medicalLicense ||
-      (savedDBData?.medicalLicense as string) ||
-      "";
-    reset({ bio: newBio, medicalLicense: newLicense });
-  }, [reset, profileData, savedDBData, savedData]);
 
   const onSubmit = async (data: ProfileInfoSchema) => {
     if (!expiry) {
@@ -131,8 +119,8 @@ export default function ProfileInfoForm({
   if (!isMounted) {
     return (
       <div className="space-y-4">
-        <div className="mb-6 border-b pb-4">
-          <h3 className="font-bold text-lg">{title}</h3>
+        <div className="mb-6 border-b pb-4 dark:border-slate-600">
+          <h3 className="font-bold text-lg dark:text-slate-200">{title}</h3>
           <p className="mt-1 text-muted-foreground text-sm">{description}</p>
         </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">

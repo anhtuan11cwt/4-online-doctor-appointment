@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { Loader2 } from "lucide-react";
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { createDoctorProfile } from "@/actions/onboarding";
@@ -72,7 +72,6 @@ export default function BioDataForm({
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors },
   } = useForm<BioDataSchema>({
     defaultValues: {
@@ -106,46 +105,6 @@ export default function BioDataForm({
     },
     resolver: zodResolver(bioDataSchema),
   });
-
-  useEffect(() => {
-    reset({
-      address:
-        savedData?.address ||
-        bioData.address ||
-        (savedDBData?.address as string) ||
-        "",
-      email:
-        savedData?.email ||
-        bioData.email ||
-        (savedDBData?.email as string) ||
-        user.email,
-      fullName:
-        savedData?.fullName ||
-        bioData.fullName ||
-        (savedDBData?.firstName as string) ||
-        user.name ||
-        "",
-      gender:
-        (savedData?.gender as "male" | "female") ||
-        bioData.gender ||
-        (savedDBData?.gender as "male" | "female") ||
-        undefined,
-      phone:
-        savedData?.phone ||
-        bioData.phone ||
-        (savedDBData?.phone as string) ||
-        user.phone ||
-        "",
-    });
-  }, [
-    user.email,
-    user.name,
-    user.phone,
-    reset,
-    bioData,
-    savedDBData,
-    savedData,
-  ]);
 
   const onSubmit = async (data: BioDataSchema) => {
     if (!date) {
@@ -193,8 +152,8 @@ export default function BioDataForm({
   if (!isMounted) {
     return (
       <div className="space-y-4">
-        <div className="mb-6 border-b pb-4">
-          <h3 className="font-bold text-lg">{title}</h3>
+        <div className="mb-6 border-b pb-4 dark:border-slate-600">
+          <h3 className="font-bold text-lg dark:text-slate-200">{title}</h3>
           <p className="mt-1 text-muted-foreground text-sm">{description}</p>
         </div>
         <div className="grid grid-cols-1 items-start gap-4 sm:grid-cols-2">
