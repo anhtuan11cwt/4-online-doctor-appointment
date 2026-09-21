@@ -1,11 +1,18 @@
+import HomeDisplayCard from "@/components/dashboard/doctor/home-display-card";
+import ListPanel from "@/components/dashboard/doctor/list-panel";
+import PanelHeader from "@/components/dashboard/doctor/panel-header";
+
 export default function DoctorAppointmentsPage() {
   return (
     <div className="flex w-full flex-col">
-      <div className="flex flex-col gap-4 py-4 md:gap-8 md:py-8">
-        <h2 className="font-bold text-xl sm:text-2xl">Lịch hẹn</h2>
-        <p className="text-muted-foreground text-sm sm:text-base">
-          Đang được cập nhật...
-        </p>
+      <PanelHeader />
+      <div className="flex flex-col md:grid md:grid-cols-12">
+        <div className="border-gray-100 border-b md:col-span-4 md:border-r md:border-b-0">
+          <ListPanel />
+        </div>
+        <div className="p-3 md:col-span-8 md:px-6 md:py-3">
+          <HomeDisplayCard />
+        </div>
       </div>
     </div>
   );
