@@ -107,5 +107,25 @@ model DoctorProfile {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
+  availability Availability?
+
   @@map("doctor_profiles")
+}
+
+model Availability {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  doctorProfileId String   @unique @db.ObjectId
+  monday          String[] @default([])
+  tuesday         String[] @default([])
+  wednesday       String[] @default([])
+  thursday        String[] @default([])
+  friday          String[] @default([])
+  saturday        String[] @default([])
+  sunday          String[] @default([])
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  doctorProfile DoctorProfile @relation(fields: [doctorProfileId], references: [id], onDelete: Cascade)
+
+  @@map("availability")
 }

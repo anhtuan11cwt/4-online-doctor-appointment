@@ -76,6 +76,7 @@ export async function getApplicationByTrackingNumber(trackingNumber: string) {
 export async function getDoctorProfileById(userId: string) {
   try {
     const profile = await prisma.doctorProfile.findUnique({
+      include: { availability: true },
       where: { userId },
     });
 
