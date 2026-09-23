@@ -108,6 +108,11 @@ model DoctorProfile {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   availability Availability?
+  service      Service?     @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+  serviceId    String?      @db.ObjectId
+  specialty    Specialty?   @relation(fields: [specialtyId], references: [id], onDelete: SetNull)
+  specialtyId  String?      @db.ObjectId
+  symptomIds   String[]     @default([])
 
   @@map("doctor_profiles")
 }
@@ -128,4 +133,40 @@ model Availability {
   doctorProfile DoctorProfile @relation(fields: [doctorProfileId], references: [id], onDelete: Cascade)
 
   @@map("availability")
+}
+
+model Service {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  title     String
+  slug      String   @unique
+  imageUrl  String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  doctors DoctorProfile[]
+
+  @@map("services")
+}
+
+model Specialty {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  title     String
+  slug      String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  doctors DoctorProfile[]
+
+  @@map("specialties")
+}
+
+model Symptom {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  title     String
+  slug      String   @unique
+  doctorIds String[] @default([])
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("symptoms")
 }

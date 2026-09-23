@@ -8,21 +8,7 @@ import {
   updateAvailabilityById,
 } from "@/actions/availability";
 import { Button } from "@/components/ui/button";
-
-const times = [
-  { label: "7:00 SA", value: "7" },
-  { label: "8:00 SA", value: "8" },
-  { label: "9:00 SA", value: "9" },
-  { label: "10:00 SA", value: "10" },
-  { label: "11:00 SA", value: "11" },
-  { label: "12:00 TR", value: "12" },
-  { label: "1:00 CH", value: "1" },
-  { label: "2:00 CH", value: "2" },
-  { label: "3:00 CH", value: "3" },
-  { label: "4:00 CH", value: "4" },
-  { label: "5:00 CH", value: "5" },
-  { label: "6:00 CH", value: "6" },
-];
+import { timesArray } from "@/config/constants";
 
 type DayAvailabilityFormProps = {
   dayName: string;
@@ -46,7 +32,7 @@ export default function DayAvailabilityForm({
 
   const handleAddTime = (time: string) => {
     if (selectedTimes.includes(time)) {
-      const timeObj = times.find((t) => t.value === time);
+      const timeObj = timesArray.find((t) => t.value === time);
       toast.error(`${timeObj?.label ?? time} giờ đã được thêm`);
       return;
     }
@@ -58,7 +44,7 @@ export default function DayAvailabilityForm({
   };
 
   const handleAddAll = () => {
-    setSelectedTimes(times.map((t) => t.value));
+    setSelectedTimes(timesArray.map((t) => t.value));
   };
 
   const handleClearAll = () => {
@@ -97,16 +83,16 @@ export default function DayAvailabilityForm({
     <div
       className={`rounded-lg border border-gray-200 bg-white shadow-sm transition-opacity dark:border-gray-700 dark:bg-gray-800 ${loading ? "pointer-events-none opacity-50" : ""}`}
     >
-      <div className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 sm:divide-x sm:divide-gray-200 sm:p-5 md:p-6">
+      <div className="grid grid-cols-1 gap-3 p-3 sm:grid-cols-2 sm:gap-4 sm:divide-x sm:divide-gray-200 sm:p-4 md:p-6">
         {/* Cột chọn giờ */}
         <div className="space-y-3">
           <p className="font-medium text-gray-700 text-sm dark:text-gray-300">
             Chọn các khung giờ bạn có thể hẹn trong ngày {dayName}
           </p>
           <div className="flex flex-wrap gap-2">
-            {times.map((time) => (
+            {timesArray.map((time) => (
               <button
-                className="flex items-center gap-1 rounded-md border border-gray-200 px-3 py-2 text-sm transition-colors hover:bg-gray-50 active:bg-gray-100 dark:border-gray-600 dark:active:bg-gray-600 dark:hover:bg-gray-700"
+                className="flex items-center gap-1 rounded-md border border-gray-200 px-2 py-1.5 text-xs transition-colors hover:bg-gray-50 active:bg-gray-100 sm:px-3 sm:py-2 sm:text-sm dark:border-gray-600 dark:active:bg-gray-600 dark:hover:bg-gray-700"
                 disabled={loading}
                 key={time.value}
                 onClick={() => handleAddTime(time.value)}
@@ -138,10 +124,10 @@ export default function DayAvailabilityForm({
               </p>
               <div className="flex flex-wrap gap-2">
                 {selectedTimes.map((time, index) => {
-                  const timeObj = times.find((t) => t.value === time);
+                  const timeObj = timesArray.find((t) => t.value === time);
                   return (
                     <button
-                      className="flex items-center gap-1 rounded-md border border-blue-200 bg-blue-50 px-3 py-2 text-blue-700 text-sm transition-colors hover:bg-blue-100 active:bg-blue-200 dark:border-blue-800 dark:bg-blue-900/30 dark:text-blue-300 dark:active:bg-blue-900/70 dark:hover:bg-blue-900/50"
+                      className="flex items-center gap-1 rounded-md border border-blue-200 bg-blue-50 px-2 py-1.5 text-blue-700 text-xs transition-colors hover:bg-blue-100 active:bg-blue-200 sm:px-3 sm:py-2 sm:text-sm dark:border-blue-800 dark:bg-blue-900/30 dark:text-blue-300 dark:active:bg-blue-900/70 dark:hover:bg-blue-900/50"
                       disabled={loading}
                       key={time}
                       onClick={() => handleRemoveTime(index)}
@@ -173,7 +159,7 @@ export default function DayAvailabilityForm({
       </div>
 
       {/* Nút lưu */}
-      <div className="border-gray-200 border-t px-4 py-3 sm:px-5 sm:py-4 md:px-6 md:py-4 dark:border-gray-700">
+      <div className="border-gray-200 border-t px-3 py-2.5 sm:px-4 sm:py-3 md:px-6 md:py-4 dark:border-gray-700">
         <Button
           className="w-full bg-blue-700 text-white hover:bg-blue-800 active:bg-blue-900 sm:w-auto"
           disabled={loading}

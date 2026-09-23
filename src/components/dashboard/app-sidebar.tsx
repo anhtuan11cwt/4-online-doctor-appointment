@@ -2,9 +2,12 @@
 
 import type { LucideIcon } from "lucide-react";
 import {
+  Activity,
   CalendarDays,
   CheckSquare,
+  HeartPulse,
   LayoutDashboard,
+  LayoutGrid,
   LogOut,
   Mail,
   Settings,
@@ -36,7 +39,7 @@ type SidebarLink = {
 
 const roles: Record<string, SidebarLink[]> = {
   ADMIN: [
-    { icon: LayoutDashboard, name: "Dashboard", path: "/dashboard" },
+    { icon: LayoutDashboard, name: "Bảng điều khiển", path: "/dashboard" },
     { icon: Users, name: "Bác sĩ", path: "/dashboard/doctors" },
     { icon: Users, name: "Bệnh nhân", path: "/dashboard/patients" },
     {
@@ -44,10 +47,13 @@ const roles: Record<string, SidebarLink[]> = {
       name: "Lịch hẹn",
       path: "/dashboard/appointments",
     },
+    { icon: LayoutGrid, name: "Dịch vụ", path: "/dashboard/services" },
+    { icon: Activity, name: "Chuyên khoa", path: "/dashboard/specialties" },
+    { icon: HeartPulse, name: "Triệu chứng", path: "/dashboard/symptoms" },
     { icon: Settings, name: "Cài đặt", path: "/dashboard/settings" },
   ],
   DOCTOR: [
-    { icon: LayoutDashboard, name: "Dashboard", path: "/dashboard" },
+    { icon: LayoutDashboard, name: "Bảng điều khiển", path: "/dashboard" },
     {
       icon: CalendarDays,
       name: "Lịch hẹn",
@@ -59,7 +65,7 @@ const roles: Record<string, SidebarLink[]> = {
     { icon: Settings, name: "Cài đặt", path: "/dashboard/doctor/settings" },
   ],
   USER: [
-    { icon: LayoutDashboard, name: "Dashboard", path: "/dashboard" },
+    { icon: LayoutDashboard, name: "Bảng điều khiển", path: "/dashboard" },
     {
       icon: CalendarDays,
       name: "Lịch hẹn",
