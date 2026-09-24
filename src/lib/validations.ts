@@ -353,3 +353,25 @@ export const onboardingSchemas = {
 } as const;
 
 export type OnboardingStep = keyof typeof onboardingSchemas;
+
+export const serviceSchema = z.object({
+  title: z
+    .string()
+    .trim()
+    .min(1, "Tiêu đề dịch vụ là bắt buộc")
+    .min(2, "Tiêu đề dịch vụ phải có ít nhất 2 ký tự")
+    .max(200, "Tiêu đề dịch vụ không được vượt quá 200 ký tự"),
+});
+
+export type ServiceSchema = z.infer<typeof serviceSchema>;
+
+export const specialtySchema = z.object({
+  title: z
+    .string()
+    .trim()
+    .min(1, "Tiêu đề chuyên khoa là bắt buộc")
+    .min(2, "Tiêu đề chuyên khoa phải có ít nhất 2 ký tự")
+    .max(200, "Tiêu đề chuyên khoa không được vượt quá 200 ký tự"),
+});
+
+export type SpecialtySchema = z.infer<typeof specialtySchema>;

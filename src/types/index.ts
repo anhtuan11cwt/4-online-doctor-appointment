@@ -1,6 +1,11 @@
 export type ServiceProps = {
   title: string;
-  image: string;
+  imageUrl: string;
+  slug: string;
+};
+
+export type SpecialtyProps = {
+  title: string;
   slug: string;
 };
 

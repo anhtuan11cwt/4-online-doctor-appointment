@@ -46,7 +46,7 @@ export default function DashboardLayout({
       <AppSidebar session={session} />
       <SidebarInset>
         <DashboardNavbar />
-        <main className="flex-1 overflow-auto p-4 md:p-6 lg:p-8">
+        <main className="flex-1 overflow-auto p-3 sm:p-4 md:p-6 lg:p-8">
           {children}
         </main>
       </SidebarInset>

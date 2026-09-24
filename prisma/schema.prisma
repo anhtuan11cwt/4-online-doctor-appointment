@@ -61,6 +61,12 @@ model User {
   sessions      Session[]
   doctorProfile DoctorProfile?
 
+  serviceId    String?    @db.ObjectId
+  service      Service?   @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+  specialtyId  String?    @db.ObjectId
+  specialty    Specialty? @relation(fields: [specialtyId], references: [id], onDelete: SetNull)
+  symptomIds   String[]   @default([])
+
   @@map("users")
 }
 
@@ -108,11 +114,6 @@ model DoctorProfile {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   availability Availability?
-  service      Service?     @relation(fields: [serviceId], references: [id], onDelete: SetNull)
-  serviceId    String?      @db.ObjectId
-  specialty    Specialty?   @relation(fields: [specialtyId], references: [id], onDelete: SetNull)
-  specialtyId  String?      @db.ObjectId
-  symptomIds   String[]     @default([])
 
   @@map("doctor_profiles")
 }
@@ -143,7 +144,7 @@ model Service {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  doctors DoctorProfile[]
+  users User[]
 
   @@map("services")
 }
@@ -155,7 +156,7 @@ model Specialty {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  doctors DoctorProfile[]
+  users User[]
 
   @@map("specialties")
 }

@@ -1,16 +1,32 @@
-import { Calendar } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import NewButton from "./new-button";
 
-export default function PanelHeader() {
+interface PanelHeaderProps {
+  buttonHref: string;
+  buttonTitle: string;
+  count: number;
+  icon: LucideIcon;
+  title: string;
+}
+
+export default function PanelHeader({
+  title,
+  count,
+  icon: Icon,
+  buttonTitle,
+  buttonHref,
+}: PanelHeaderProps) {
   return (
-    <div className="flex items-center justify-between border-gray-200 border-b px-4 py-3 md:px-6">
-      <div className="flex items-center gap-2">
-        <Calendar className="h-4 w-4 shrink-0" />
-        <span className="text-sm">Lịch hẹn</span>
-        <span className="text-muted-foreground text-sm">(2)</span>
+    <div className="flex flex-wrap items-center justify-between gap-2 border-gray-200 border-b px-3 py-3 sm:px-4 md:px-6">
+      <div className="flex min-w-0 items-center gap-1.5 sm:gap-2">
+        <Icon className="size-4 shrink-0" />
+        <span className="truncate text-sm">{title}</span>
+        <span className="shrink-0 text-muted-foreground text-sm">
+          ({count.toString().padStart(2, "0")})
+        </span>
       </div>
-      <div>
-        <NewButton href="#" title="Lịch hẹn mới" />
+      <div className="hidden md:block">
+        <NewButton href={buttonHref} title={buttonTitle} />
       </div>
     </div>
   );

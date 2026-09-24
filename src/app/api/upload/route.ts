@@ -1,5 +1,8 @@
 import { type NextRequest, NextResponse } from "next/server";
-import cloudinary, { CLOUDINARY_FOLDERS } from "@/lib/cloudinary";
+import cloudinary, {
+  CLOUDINARY_FOLDERS,
+  extractPublicId,
+} from "@/lib/cloudinary";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ALLOWED_TYPES = [
@@ -10,19 +13,6 @@ const ALLOWED_TYPES = [
   "image/svg+xml",
   "application/pdf",
 ];
-
-function extractPublicId(imageUrl: string): string | null {
-  const parts = imageUrl.split("/");
-  const uploadIndex = parts.indexOf("upload");
-  if (uploadIndex === -1) return null;
-  const pathParts = parts.slice(uploadIndex + 1);
-  if (pathParts[0]?.startsWith("v") && pathParts[0].length > 1) {
-    pathParts.shift();
-  }
-  const fullPath = pathParts.join("/");
-  const dotIndex = fullPath.lastIndexOf(".");
-  return dotIndex > 0 ? fullPath.substring(0, dotIndex) : fullPath;
-}
 
 export async function POST(request: NextRequest) {
   try {
