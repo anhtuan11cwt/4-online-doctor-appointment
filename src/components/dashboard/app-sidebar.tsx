@@ -8,14 +8,14 @@ import {
   HeartPulse,
   LayoutDashboard,
   LayoutGrid,
-  LogOut,
   Mail,
+  Power,
   Settings,
   Users,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import toast from "react-hot-toast";
 import {
@@ -85,8 +85,15 @@ interface AppSidebarProps {
 
 export default function AppSidebar({ session }: AppSidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const role = session?.user?.role || "USER";
   const sidebarLinks = roles[role] || roles.USER;
+
+  const handleLogout = async () => {
+    toast.success("Đăng xuất thành công!");
+    await signOut();
+    router.push("/login");
+  };
 
   return (
     <Sidebar>
@@ -126,14 +133,8 @@ export default function AppSidebar({ session }: AppSidebarProps) {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton
-              onClick={() => {
-                toast.success("Đăng xuất thành công!");
-                signOut({ callbackUrl: "/login" });
-              }}
-              tooltip="Đăng xuất"
-            >
-              <LogOut className="size-4" />
+            <SidebarMenuButton onClick={handleLogout} tooltip="Đăng xuất">
+              <Power className="mr-1 h-4 w-4" />
               <span>Đăng xuất</span>
             </SidebarMenuButton>
           </SidebarMenuItem>

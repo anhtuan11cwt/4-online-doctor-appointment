@@ -90,3 +90,31 @@ export async function createManyServices() {
     return { data: null, error: "Đã có lỗi xảy ra", status: 500 };
   }
 }
+
+export async function getServiceBySlug(slug: string) {
+  try {
+    const service = await prisma.service.findUnique({ where: { slug } });
+    return service;
+  } catch (error) {
+    console.error("Lỗi lấy dịch vụ theo slug:", error);
+    return null;
+  }
+}
+
+export async function updateService(id: string, data: ServiceProps) {
+  try {
+    const existing = await prisma.service.findUnique({ where: { id } });
+
+    if (!existing) {
+      return { data: null, error: "Dịch vụ không tồn tại", status: 404 };
+    }
+
+    const updated = await prisma.service.update({ data, where: { id } });
+    revalidatePath("/dashboard/services");
+
+    return { data: updated, error: null, status: 200 };
+  } catch (error) {
+    console.error("Lỗi cập nhật dịch vụ:", error);
+    return { data: null, error: "Đã có lỗi xảy ra", status: 500 };
+  }
+}

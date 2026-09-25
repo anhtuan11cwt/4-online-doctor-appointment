@@ -1,13 +1,14 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import type { Service } from "@prisma/client";
 import { Loader2, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { createService } from "@/actions/services";
+import { createService, updateService } from "@/actions/services";
 import ImageInput, {
   uploadToCloudinary,
 } from "@/components/form-inputs/image-input";
@@ -18,11 +19,17 @@ import { generateSlug } from "@/lib/generate-slug";
 import { cn } from "@/lib/utils";
 import { type ServiceSchema, serviceSchema } from "@/lib/validations";
 
-export default function ServiceForm() {
+type ServiceFormProps = {
+  initialData?: Service;
+  title?: string;
+};
+
+export default function ServiceForm({ initialData, title }: ServiceFormProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
-  const [imageUrl, setImageUrl] = useState("");
+  const [imageUrl, setImageUrl] = useState(initialData?.imageUrl ?? "");
+  const editingId = initialData?.id ?? "";
 
   const {
     register,
@@ -30,7 +37,7 @@ export default function ServiceForm() {
     reset,
     formState: { errors },
   } = useForm<ServiceSchema>({
-    defaultValues: { title: "" },
+    defaultValues: { title: initialData?.title ?? "" },
     resolver: zodResolver(serviceSchema),
   });
 
@@ -49,16 +56,25 @@ export default function ServiceForm() {
         title: data.title,
       };
 
-      const result = await createService(payload);
-
-      if (result.status === 201) {
-        toast.success("Tạo dịch vụ thành công");
-        reset();
-        setFile(null);
-        setImageUrl("");
-        router.push("/dashboard/services");
+      if (editingId) {
+        const result = await updateService(editingId, payload);
+        if (result.status === 200) {
+          toast.success("Cập nhật dịch vụ thành công");
+          router.push("/dashboard/services");
+        } else {
+          toast.error(result.error ?? "Đã có lỗi xảy ra");
+        }
       } else {
-        toast.error(result.error ?? "Đã có lỗi xảy ra");
+        const result = await createService(payload);
+        if (result.status === 201) {
+          toast.success("Tạo dịch vụ thành công");
+          reset();
+          setFile(null);
+          setImageUrl("");
+          router.push("/dashboard/services");
+        } else {
+          toast.error(result.error ?? "Đã có lỗi xảy ra");
+        }
       }
     } catch {
       toast.error("Đã có lỗi xảy ra");
@@ -69,10 +85,12 @@ export default function ServiceForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <div className="mb-6 flex items-start justify-between gap-2 border-b pb-4">
+      <div className="mb-4 flex items-start justify-between gap-2 border-b pb-3 min-[360px]:mb-6 min-[360px]:pb-4">
         <div className="min-w-0">
-          <h3 className="break-words font-bold text-lg">Tạo dịch vụ mới</h3>
-          <p className="mt-1 break-words text-muted-foreground text-sm">
+          <h3 className="break-words font-bold text-base min-[360px]:text-lg">
+            {editingId ? "Cập nhật dịch vụ" : title || "Tạo dịch vụ mới"}
+          </h3>
+          <p className="mt-1 break-words text-muted-foreground text-xs min-[360px]:text-sm">
             Nhập thông tin dịch vụ khám bệnh
           </p>
         </div>
@@ -127,7 +145,13 @@ export default function ServiceForm() {
         </Button>
         <Button className="w-full sm:w-auto" disabled={isLoading} type="submit">
           {isLoading && <Loader2 className="mr-2 size-4 animate-spin" />}
-          {isLoading ? "Đang tạo..." : "Tạo dịch vụ"}
+          {isLoading
+            ? editingId
+              ? "Đang cập nhật..."
+              : "Đang tạo..."
+            : editingId
+              ? "Cập nhật dịch vụ"
+              : "Tạo dịch vụ"}
         </Button>
       </div>
     </form>

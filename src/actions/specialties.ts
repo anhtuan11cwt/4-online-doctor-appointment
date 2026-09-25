@@ -68,3 +68,31 @@ export async function createManySpecialities() {
     return { data: null, error: "Đã có lỗi xảy ra", status: 500 };
   }
 }
+
+export async function getSpecialtyBySlug(slug: string) {
+  try {
+    const specialty = await prisma.specialty.findUnique({ where: { slug } });
+    return specialty;
+  } catch (error) {
+    console.error("Lỗi lấy chuyên khoa theo slug:", error);
+    return null;
+  }
+}
+
+export async function updateSpecialty(id: string, data: SpecialtyProps) {
+  try {
+    const existing = await prisma.specialty.findUnique({ where: { id } });
+
+    if (!existing) {
+      return { data: null, error: "Chuyên khoa không tồn tại", status: 404 };
+    }
+
+    const updated = await prisma.specialty.update({ data, where: { id } });
+    revalidatePath("/dashboard/specialties");
+
+    return { data: updated, error: null, status: 200 };
+  } catch (error) {
+    console.error("Lỗi cập nhật chuyên khoa:", error);
+    return { data: null, error: "Đã có lỗi xảy ra", status: 500 };
+  }
+}

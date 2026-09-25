@@ -1,4 +1,5 @@
 import { getServerSession } from "next-auth";
+import { getStats } from "@/actions/stats";
 import AdminDashboard from "@/components/dashboard/dashboard";
 import DoctorDashboard from "@/components/dashboard/doctor-dashboard";
 import PatientDashboard from "@/components/dashboard/patient-dashboard";
@@ -10,5 +11,7 @@ export default async function DashboardPage() {
 
   if (role === "DOCTOR") return <DoctorDashboard />;
   if (role === "USER") return <PatientDashboard />;
-  return <AdminDashboard />;
+
+  const stats = await getStats();
+  return <AdminDashboard stats={stats} />;
 }

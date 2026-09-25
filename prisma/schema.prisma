@@ -42,78 +42,78 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(auto()) @map("_id") @db.ObjectId
-  name          String?
-  email         String    @unique @db.String
-  emailVerified DateTime? @map("email_verified")
-  image         String?
-  password      String    @db.String
-  phone         String?   @db.String
-  role            UserRole  @default(USER)
-  token           String?   @db.String
-  isVerified      Boolean   @default(false)
-  plan            String?   @db.String
-  onboardingPage  String?   @db.String
-  createdAt     DateTime  @default(now()) @map("created_at")
-  updatedAt     DateTime  @updatedAt @map("updated_at")
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  name           String?
+  email          String    @unique @db.String
+  emailVerified  DateTime? @map("email_verified")
+  image          String?
+  password       String    @db.String
+  phone          String?   @db.String
+  role           UserRole  @default(USER)
+  token          String?   @db.String
+  isVerified     Boolean   @default(false)
+  plan           String?   @db.String
+  onboardingPage String?   @db.String
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
 
   accounts      Account[]
   sessions      Session[]
   doctorProfile DoctorProfile?
 
-  serviceId    String?    @db.ObjectId
-  service      Service?   @relation(fields: [serviceId], references: [id], onDelete: SetNull)
-  specialtyId  String?    @db.ObjectId
-  specialty    Specialty? @relation(fields: [specialtyId], references: [id], onDelete: SetNull)
-  symptomIds   String[]   @default([])
-
   @@map("users")
 }
 
 model DoctorProfile {
-  id            String  @id @default(auto()) @map("_id") @db.ObjectId
-  userId        String  @unique @db.ObjectId
-  trackingNumber String  @unique
+  id             String @id @default(auto()) @map("_id") @db.ObjectId
+  userId         String @unique @db.ObjectId
+  trackingNumber String @unique
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  firstName           String
-  lastName            String
-  middleName          String?
-  dateOfBirth         DateTime?
-  gender              String
-  page                String?
+  firstName   String
+  lastName    String
+  middleName  String?
+  dateOfBirth DateTime?
+  gender      String
+  page        String?
 
-  profilePicture      String?
-  bio                 String?
-  medicalLicense      String?
+  profilePicture       String?
+  bio                  String?
+  medicalLicense       String?
   medicalLicenseExpiry DateTime?
-  yearsOfExperience   Int?
-  email               String?
-  phone               String?
+  yearsOfExperience    Int?
+  email                String?
+  phone                String?
 
   primarySpecialization String?
   otherSpecialties      String[] @default([])
 
-  hospitalName            String?
-  hospitalAddress         String?
-  hospitalContactNumber   String?
-  hospitalEmailAddress    String?
-  hospitalWebsite         String?
-  hoursOfOperation        String?
-  servicesOffered         String[] @default([])
-  insuranceAccepted       String?
-  languagesSpoken         String[] @default([])
+  hospitalName          String?
+  hospitalAddress       String?
+  hospitalContactNumber String?
+  hospitalEmailAddress  String?
+  hospitalWebsite       String?
+  hoursOfOperation      String?
+  servicesOffered       String[] @default([])
+  insuranceAccepted     String?
+  languagesSpoken       String[] @default([])
 
-  educationHistory        String?
-  publishedWork           String?
-  accomplishments         String[] @default([])
-  additionalDocuments     String[] @default([])
+  educationHistory    String?
+  publishedWork       String?
+  accomplishments     String[] @default([])
+  additionalDocuments String[] @default([])
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
   availability Availability?
+
+  service     Service?   @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+  serviceId   String?    @db.ObjectId
+  specialty   Specialty? @relation(fields: [specialtyId], references: [id], onDelete: SetNull)
+  specialtyId String?    @db.ObjectId
+  symptomIds  String[]   @default([])
 
   @@map("doctor_profiles")
 }
@@ -144,7 +144,7 @@ model Service {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  users User[]
+  doctorProfiles DoctorProfile[]
 
   @@map("services")
 }
@@ -156,7 +156,7 @@ model Specialty {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  users User[]
+  doctorProfiles DoctorProfile[]
 
   @@map("specialties")
 }

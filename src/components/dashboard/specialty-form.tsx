@@ -1,13 +1,14 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import type { Specialty } from "@prisma/client";
 import { Loader2, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { createSpeciality } from "@/actions/specialties";
+import { createSpeciality, updateSpecialty } from "@/actions/specialties";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,9 +16,18 @@ import { generateSlug } from "@/lib/generate-slug";
 import { cn } from "@/lib/utils";
 import { type SpecialtySchema, specialtySchema } from "@/lib/validations";
 
-export default function SpecialtyForm() {
+type SpecialtyFormProps = {
+  initialData?: Specialty;
+  title?: string;
+};
+
+export default function SpecialtyForm({
+  initialData,
+  title,
+}: SpecialtyFormProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const editingId = initialData?.id ?? "";
 
   const {
     register,
@@ -25,7 +35,7 @@ export default function SpecialtyForm() {
     reset,
     formState: { errors },
   } = useForm<SpecialtySchema>({
-    defaultValues: { title: "" },
+    defaultValues: { title: initialData?.title ?? "" },
     resolver: zodResolver(specialtySchema),
   });
 
@@ -37,14 +47,23 @@ export default function SpecialtyForm() {
         title: data.title,
       };
 
-      const result = await createSpeciality(payload);
-
-      if (result.status === 201) {
-        toast.success("Tạo chuyên khoa thành công");
-        reset();
-        router.push("/dashboard/specialties");
+      if (editingId) {
+        const result = await updateSpecialty(editingId, payload);
+        if (result.status === 200) {
+          toast.success("Cập nhật chuyên khoa thành công");
+          router.push("/dashboard/specialties");
+        } else {
+          toast.error(result.error ?? "Đã có lỗi xảy ra");
+        }
       } else {
-        toast.error(result.error ?? "Đã có lỗi xảy ra");
+        const result = await createSpeciality(payload);
+        if (result.status === 201) {
+          toast.success("Tạo chuyên khoa thành công");
+          reset();
+          router.push("/dashboard/specialties");
+        } else {
+          toast.error(result.error ?? "Đã có lỗi xảy ra");
+        }
       }
     } catch {
       toast.error("Đã có lỗi xảy ra");
@@ -55,10 +74,14 @@ export default function SpecialtyForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <div className="mb-6 flex items-start justify-between gap-2 border-b pb-4">
+      <div className="mb-4 flex items-start justify-between gap-2 border-b pb-3 min-[360px]:mb-6 min-[360px]:pb-4">
         <div className="min-w-0">
-          <h3 className="break-words font-bold text-lg">Tạo chuyên khoa mới</h3>
-          <p className="mt-1 break-words text-muted-foreground text-sm">
+          <h3 className="break-words font-bold text-base min-[360px]:text-lg">
+            {editingId
+              ? "Cập nhật chuyên khoa"
+              : title || "Tạo chuyên khoa mới"}
+          </h3>
+          <p className="mt-1 break-words text-muted-foreground text-xs min-[360px]:text-sm">
             Nhập thông tin chuyên khoa
           </p>
         </div>
@@ -104,7 +127,13 @@ export default function SpecialtyForm() {
         </Button>
         <Button className="w-full sm:w-auto" disabled={isLoading} type="submit">
           {isLoading && <Loader2 className="mr-2 size-4 animate-spin" />}
-          {isLoading ? "Đang tạo..." : "Tạo chuyên khoa"}
+          {isLoading
+            ? editingId
+              ? "Đang cập nhật..."
+              : "Đang tạo..."
+            : editingId
+              ? "Cập nhật chuyên khoa"
+              : "Tạo chuyên khoa"}
         </Button>
       </div>
     </form>

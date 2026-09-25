@@ -375,3 +375,14 @@ export const specialtySchema = z.object({
 });
 
 export type SpecialtySchema = z.infer<typeof specialtySchema>;
+
+export const symptomSchema = z.object({
+  title: z
+    .string()
+    .trim()
+    .min(1, "Tiêu đề triệu chứng là bắt buộc")
+    .min(2, "Tiêu đề triệu chứng phải có ít nhất 2 ký tự")
+    .max(200, "Tiêu đề triệu chứng không được vượt quá 200 ký tự"),
+});
+
+export type SymptomSchema = z.infer<typeof symptomSchema>;

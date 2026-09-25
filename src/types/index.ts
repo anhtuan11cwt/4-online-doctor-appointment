@@ -9,6 +9,16 @@ export type SpecialtyProps = {
   slug: string;
 };
 
+export type SymptomProps = {
+  title: string;
+  slug: string;
+};
+
+export type SelectOption = {
+  label: string;
+  value: string;
+};
+
 export type RegisterInputProps = {
   fullName: string;
   email: string;
