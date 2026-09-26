@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { updateDoctorProfile } from "@/actions/onboarding";
+import { updateDoctorProfileWithService } from "@/actions/services";
 import CustomMultiSelect from "@/components/dashboard/settings/custom-multi-select";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -80,7 +80,7 @@ export default function UpdateServiceForm({
 
     setIsLoading(true);
     try {
-      const result = await updateDoctorProfile(session.user.id, data);
+      const result = await updateDoctorProfileWithService(profile.id, data);
       if (result.status === 201) {
         toast.success("Cập nhật cài đặt dịch vụ thành công");
         router.refresh();

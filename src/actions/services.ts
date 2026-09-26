@@ -118,3 +118,29 @@ export async function updateService(id: string, data: ServiceProps) {
     return { data: null, error: "Đã có lỗi xảy ra", status: 500 };
   }
 }
+
+export async function updateDoctorProfileWithService(
+  profileId: string,
+  data: Record<string, unknown>,
+) {
+  try {
+    const updateData = { ...data };
+    delete updateData.id;
+    delete updateData.userId;
+    delete updateData.profileId;
+
+    const updatedProfile = await prisma.doctorProfile.update({
+      data: updateData as Parameters<
+        typeof prisma.doctorProfile.update
+      >[0]["data"],
+      where: { id: profileId },
+    });
+
+    revalidatePath("/dashboard/doctor/settings");
+
+    return { data: updatedProfile, error: null, status: 201 };
+  } catch (error) {
+    console.error("Lỗi cập nhật doctor profile kèm dịch vụ:", error);
+    return { data: null, error: "Đã có lỗi xảy ra", status: 500 };
+  }
+}
