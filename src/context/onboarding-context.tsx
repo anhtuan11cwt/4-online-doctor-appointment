@@ -67,6 +67,7 @@ const initialPracticeData = {
   hospitalEmailAddress: "",
   hospitalName: "",
   hospitalWebsite: "",
+  hourlyWage: 15000,
   hoursOfOperation: "",
   insuranceAccepted: undefined as "yes" | "no" | undefined,
   languagesSpoken: [] as string[],

@@ -65,6 +65,7 @@
     "lint:fix": "eslint --fix",
     "postinstall": "prisma generate",
     "predev": "npx kill-port 3000",
+    "seed:doctors": "node scripts/seed-doctors.js",
     "start": "next start"
   },
   "version": "0.1.0"

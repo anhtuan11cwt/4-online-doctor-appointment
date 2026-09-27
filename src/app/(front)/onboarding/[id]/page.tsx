@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { getSpecialities } from "@/actions/specialties";
 import { getUserById } from "@/actions/users";
 import OnboardingSteps from "@/components/onboarding/onboarding-steps";
 
@@ -12,6 +13,7 @@ export default async function OnboardingPage({
   const { id } = await params;
   const { page = "biodata", saved } = await searchParams;
   const user = await getUserById(id);
+  const specialties = await getSpecialities();
 
   if (user?.role !== "DOCTOR") {
     redirect("/login");
@@ -28,6 +30,7 @@ export default async function OnboardingPage({
         onboardingData={onboardingData}
         page={page}
         saved={saved}
+        specialties={specialties}
         user={{ email: user.email, name: user.name, phone: user.phone }}
       />
     </div>

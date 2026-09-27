@@ -2,19 +2,21 @@
 
 import { ArrowUpRight, Map as MapIcon } from "lucide-react";
 import Link from "next/link";
-import { doctors } from "../../../public/assets";
+import type { DoctorWithProfile } from "@/types";
 import DoctorListCarousel from "./doctor-list-carousel";
 import SectionHeading from "./section-heading";
 import ToggleButton from "./toggle-button";
 
 export default function DoctorsList({
+  doctors = [],
   title = "Khám từ xa",
   isInPerson = false,
   className = "bg-slate-50",
 }: {
-  title?: string;
-  isInPerson?: boolean;
   className?: string;
+  doctors?: DoctorWithProfile[];
+  isInPerson?: boolean;
+  title?: string;
 }) {
   return (
     <section className={`py-6 sm:py-8 lg:py-24 ${className} dark:bg-slate-800`}>
@@ -37,7 +39,7 @@ export default function DoctorsList({
           </div>
         </div>
 
-        <div className="mt-6 px-10 sm:mt-8 sm:px-12">
+        <div className="mt-6 px-6 sm:mt-8 sm:px-10 md:px-12">
           <DoctorListCarousel doctors={doctors} isInPerson={isInPerson} />
         </div>
       </div>

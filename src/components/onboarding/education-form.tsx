@@ -1,30 +1,36 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import type { Specialty } from "@prisma/client";
 import { Loader2 } from "lucide-react";
 import { useState, useSyncExternalStore } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { updateDoctorProfile } from "@/actions/onboarding";
 import { updateOnboardingData } from "@/actions/users";
+import CustomMultiSelect from "@/components/dashboard/settings/custom-multi-select";
 import ArrayInput from "@/components/form-inputs/array-input";
 import SelectInput from "@/components/form-inputs/select-input";
 import TextInput from "@/components/form-inputs/text-input";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import { useOnboardingContext } from "@/context/onboarding-context";
 import degrees from "@/data/degrees.json";
 import universities from "@/data/universities.json";
 import { type EducationSchema, educationSchema } from "@/lib/validations";
+import type { SelectOption } from "@/types";
 
 export default function EducationForm({
   id,
   savedData,
+  specialties = [],
   title = "Thông tin giáo dục",
   description = "Vui lòng điền thông tin giáo dục của bạn",
   onComplete,
 }: {
   id: string;
   savedData?: Record<string, string>;
+  specialties?: Specialty[];
   title?: string;
   description?: string;
   onComplete?: () => void;
@@ -32,6 +38,35 @@ export default function EducationForm({
   const { educationData, setEducationData, savedDBData } =
     useOnboardingContext();
   const [isLoading, setIsLoading] = useState(false);
+
+  const allSpecialties: SelectOption[] = (specialties ?? []).map((item) => ({
+    label: item.title,
+    value: item.id,
+  }));
+
+  const findSpecialtyId = (value?: unknown) => {
+    if (!value || typeof value !== "string") return "";
+    const matched = allSpecialties.find(
+      (option) => option.value === value || option.label === value,
+    );
+    return matched?.value ?? "";
+  };
+
+  const buildSelectedSpecialties = (values?: unknown): SelectOption[] => {
+    if (!Array.isArray(values)) return [];
+    return allSpecialties.filter(
+      (option) =>
+        values.includes(option.value) || values.includes(option.label),
+    );
+  };
+
+  const [selectedSpecialtyId, setSelectedSpecialtyId] = useState(() =>
+    findSpecialtyId(savedDBData?.primarySpecialization),
+  );
+  const [selectedOtherSpecialties, setSelectedOtherSpecialties] = useState<
+    SelectOption[]
+  >(() => buildSelectedSpecialties(savedDBData?.otherSpecialties));
+
   const [additionalCourses, setAdditionalCourses] = useState<string[]>(() => {
     const saved = savedData?.additionalCourses as unknown as
       | string[]
@@ -43,20 +78,10 @@ export default function EducationForm({
     ) {
       return educationData.additionalCourses as string[];
     }
-    if (
-      savedDBData?.otherSpecialties &&
-      Array.isArray(savedDBData.otherSpecialties) &&
-      (savedDBData.otherSpecialties as unknown[]).length > 0
-    ) {
-      return savedDBData.otherSpecialties as string[];
-    }
     return [];
   });
   const [selectedDegree, setSelectedDegree] = useState(
-    savedData?.degree ||
-      educationData.degree ||
-      (savedDBData?.primarySpecialization as string) ||
-      "",
+    savedData?.degree || educationData.degree || "",
   );
   const [selectedUniversity, setSelectedUniversity] = useState(
     savedData?.university ||
@@ -79,11 +104,7 @@ export default function EducationForm({
     formState: { errors },
   } = useForm<EducationSchema>({
     defaultValues: {
-      degree:
-        savedData?.degree ||
-        educationData.degree ||
-        (savedDBData?.primarySpecialization as string) ||
-        "",
+      degree: savedData?.degree || educationData.degree || "",
       graduationYear: savedData?.graduationYear
         ? Number(savedData.graduationYear)
         : educationData.graduationYear ||
@@ -113,6 +134,12 @@ export default function EducationForm({
   const onSubmit = async (data: EducationSchema) => {
     setIsLoading(true);
     try {
+      const primarySpecialtyTitle =
+        allSpecialties.find((option) => option.value === selectedSpecialtyId)
+          ?.label ||
+        (savedDBData?.primarySpecialization as string) ||
+        "";
+
       const formattedData = {
         ...data,
         additionalCourses,
@@ -121,9 +148,11 @@ export default function EducationForm({
       };
       await updateDoctorProfile(id, {
         educationHistory: selectedUniversity,
-        otherSpecialties: additionalCourses,
+        otherSpecialties: selectedOtherSpecialties.map(
+          (option) => option.label,
+        ),
         page: "practice",
-        primarySpecialization: selectedDegree,
+        primarySpecialization: primarySpecialtyTitle,
       });
       await updateOnboardingData(id, "education", formattedData);
       setEducationData(data);
@@ -188,6 +217,17 @@ export default function EducationForm({
           value={selectedUniversity}
         />
 
+        <SelectInput
+          disabled={isLoading}
+          errors={errors}
+          label="Chuyên khoa"
+          name="primarySpecialization"
+          onChange={(e) => setSelectedSpecialtyId(e.target.value)}
+          options={allSpecialties}
+          placeholder="Chọn chuyên khoa"
+          value={selectedSpecialtyId}
+        />
+
         <TextInput
           disabled={isLoading}
           errors={errors}
@@ -206,6 +246,17 @@ export default function EducationForm({
           type="number"
           value={graduationYearValue}
         />
+
+        <div className="col-span-full grid gap-2">
+          <Label>Chuyên khoa bổ sung</Label>
+          <CustomMultiSelect
+            disabled={isLoading}
+            labelledBy="Chuyên khoa bổ sung"
+            onChange={setSelectedOtherSpecialties}
+            options={allSpecialties}
+            value={selectedOtherSpecialties}
+          />
+        </div>
 
         <ArrayInput
           className="col-span-full"

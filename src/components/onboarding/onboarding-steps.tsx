@@ -1,5 +1,6 @@
 "use client";
 
+import type { Specialty } from "@prisma/client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
@@ -27,12 +28,14 @@ export default function OnboardingSteps({
   onboardingData,
   page,
   saved,
+  specialties = [],
 }: {
   id: string;
   user: { email: string; name: string | null; phone: string | null };
   onboardingData: Record<string, Record<string, unknown>>;
   page: string;
   saved?: string;
+  specialties?: Specialty[];
 }) {
   const toastShown = useRef(false);
   const router = useRouter();
@@ -106,6 +109,7 @@ export default function OnboardingSteps({
             savedData={
               onboardingData.education as Record<string, string> | undefined
             }
+            specialties={specialties}
           />
         );
       case "practice":

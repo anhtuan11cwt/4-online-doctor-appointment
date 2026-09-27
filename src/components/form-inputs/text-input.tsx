@@ -11,9 +11,11 @@ type TextInputProps<T extends Record<string, unknown>> = {
   inputMode?: React.HTMLAttributes<HTMLInputElement>["inputMode"];
   label: string;
   maxLength?: number;
+  min?: number;
   name: Path<T>;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   pattern?: string;
+  placeholder?: string;
   register?: UseFormRegister<T>;
   type?: string;
   value?: string;
@@ -27,7 +29,9 @@ export default function TextInput<T extends Record<string, unknown>>({
   type = "text",
   inputMode,
   maxLength,
+  min,
   pattern,
+  placeholder,
   disabled = false,
   value,
   onChange,
@@ -54,8 +58,10 @@ export default function TextInput<T extends Record<string, unknown>>({
         id={name}
         inputMode={inputMode}
         maxLength={maxLength}
+        min={min}
         onInput={inputMode === "numeric" ? handleNumericInput : undefined}
         pattern={pattern}
+        placeholder={placeholder}
         type={type}
         {...inputProps}
       />

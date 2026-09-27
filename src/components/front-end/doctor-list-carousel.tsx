@@ -1,24 +1,15 @@
 "use client";
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import type { StaticImageData } from "next/image";
 import { useRef } from "react";
+import type { DoctorWithProfile } from "@/types";
 import DoctorCard from "./doctor-card";
-
-interface Doctor {
-  _id: string;
-  address: { line1: string; line2: string };
-  fees: number;
-  image: string | StaticImageData;
-  name: string;
-  speciality: string;
-}
 
 export default function DoctorListCarousel({
   doctors,
   isInPerson = false,
 }: {
-  doctors: Doctor[];
+  doctors: DoctorWithProfile[];
   isInPerson?: boolean;
 }) {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -32,6 +23,14 @@ export default function DoctorListCarousel({
     });
   };
 
+  if (doctors.length === 0) {
+    return (
+      <p className="py-6 text-center text-muted-foreground text-sm">
+        Chưa có bác sĩ nào trong danh mục này.
+      </p>
+    );
+  }
+
   return (
     <div className="group/carousel relative">
       <button
@@ -43,14 +42,14 @@ export default function DoctorListCarousel({
       </button>
 
       <div
-        className="scrollbar-none flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth pb-2"
+        className="scrollbar-none flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth pb-2 sm:gap-4"
         ref={scrollRef}
         style={{ msOverflowStyle: "none", scrollbarWidth: "none" }}
       >
         {doctors.map((doctor) => (
           <div
-            className="w-[280px] min-w-[280px] snap-start sm:w-[320px] sm:min-w-[320px]"
-            key={doctor._id}
+            className="w-[200px] min-w-[200px] snap-start sm:w-[320px] sm:min-w-[320px]"
+            key={doctor.id}
           >
             <DoctorCard doctor={doctor} isInPerson={isInPerson} />
           </div>

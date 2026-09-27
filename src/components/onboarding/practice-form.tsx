@@ -66,6 +66,17 @@ export default function PracticeForm({
       (savedDBData?.insuranceAccepted as string) ||
       "",
   );
+  const [hourlyWage, setHourlyWage] = useState(() => {
+    const saved = Number(savedData?.hourlyWage);
+    if (Number.isFinite(saved) && saved > 0) return String(saved);
+    const fromContext = practiceData.hourlyWage;
+    if (typeof fromContext === "number" && fromContext > 0) {
+      return String(fromContext);
+    }
+    const fromDB = savedDBData?.hourlyWage;
+    if (typeof fromDB === "number" && fromDB > 0) return String(fromDB);
+    return "15000";
+  });
 
   const savedHours =
     savedData?.hoursOfOperation ||
@@ -123,6 +134,7 @@ export default function PracticeForm({
         practiceData.hospitalWebsite ||
         (savedDBData?.hospitalWebsite as string) ||
         "",
+      hourlyWage: Number(hourlyWage) || 15000,
       hoursOfOperation: savedHours,
       insuranceAccepted:
         (savedData?.insuranceAccepted as "yes" | "no") ||
@@ -228,6 +240,23 @@ export default function PracticeForm({
           label="Website bệnh viện (không bắt buộc)"
           name="hospitalWebsite"
           register={register}
+        />
+
+        <TextInput
+          disabled={isLoading}
+          errors={errors}
+          inputMode="numeric"
+          label="Mức phí theo giờ (VNĐ)"
+          min={15000}
+          name="hourlyWage"
+          onChange={(e) => {
+            const val = e.target.value.replace(/[^0-9]/g, "");
+            setHourlyWage(val);
+            setValue("hourlyWage", Number(val), { shouldValidate: true });
+          }}
+          placeholder="Tối thiểu 15.000"
+          type="number"
+          value={hourlyWage}
         />
 
         <div className="grid gap-2">

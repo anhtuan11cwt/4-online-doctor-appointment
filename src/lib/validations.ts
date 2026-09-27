@@ -252,6 +252,11 @@ export const practiceInfoSchema = z.object({
     .max(200, "Website không được vượt quá 200 ký tự")
     .optional()
     .or(z.literal("")),
+  hourlyWage: z
+    .number({ message: "Mức phí theo giờ phải là số" })
+    .int("Mức phí theo giờ phải là số nguyên")
+    .min(15000, "Mức phí theo giờ tối thiểu là 15.000")
+    .max(10000000, "Mức phí theo giờ không được vượt quá 10.000.000"),
   hoursOfOperation: z
     .string()
     .trim()

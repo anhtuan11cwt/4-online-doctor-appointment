@@ -115,6 +115,9 @@ model DoctorProfile {
   specialtyId String?    @db.ObjectId
   symptomIds  String[]   @default([])
 
+  operationMode String?
+  hourlyWage    Int @default(15000)
+
   @@map("doctor_profiles")
 }
 
