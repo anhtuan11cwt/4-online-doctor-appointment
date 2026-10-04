@@ -1,15 +1,17 @@
 import { getServices } from "@/actions/services";
 import { getSpecialities } from "@/actions/specialties";
 import { getSymptoms } from "@/actions/symptoms";
+import PriceUpdateForm from "@/components/dashboard/settings/price-update-form";
 import UpdateServiceForm from "@/components/dashboard/settings/update-service-form";
 
 type DoctorServiceSettingsProps = {
   profile?: {
+    hourlyWage?: number;
     id: string;
+    operationMode?: string | null;
     serviceId?: string | null;
     specialtyId?: string | null;
     symptomIds?: string[];
-    operationMode?: string | null;
   } | null;
 };
 
@@ -29,6 +31,10 @@ export default async function DoctorServiceSettings({
         services={services}
         specialties={specialties}
         symptoms={symptoms}
+      />
+      <PriceUpdateForm
+        hourlyWage={profile?.hourlyWage}
+        profileId={profile?.id}
       />
     </div>
   );

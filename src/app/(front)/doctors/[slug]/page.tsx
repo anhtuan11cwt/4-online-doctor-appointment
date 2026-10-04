@@ -1,27 +1,38 @@
-"use client";
-
 import { MapPin, Star, Stethoscope } from "lucide-react";
 import Image from "next/image";
-import { useParams } from "next/navigation";
+import { getDoctorBySlug } from "@/actions/doctors";
 import DoctorDetails from "@/components/front-end/doctor-details";
 import FixedBookButton from "@/components/front-end/fixed-book-button";
-import { doctors } from "../../../../../public/assets";
+import { getFormattedShortDate } from "@/lib/date";
 
-export default function DoctorPage() {
-  const { slug } = useParams();
-  const doctor = doctors.find((d) => d._id === slug);
+const DEFAULT_AVATAR = "/profile_pic.png";
+
+export const dynamic = "force-dynamic";
+
+export default async function DoctorPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const doctor = await getDoctorBySlug(slug);
 
   if (!doctor) {
     return (
-      <section className="bg-slate-50 py-16 sm:py-24 dark:bg-slate-800">
-        <div className="mx-auto max-w-4xl px-4 text-center">
-          <h1 className="font-bold text-gray-900 text-xl sm:text-2xl dark:text-white">
-            Không tìm thấy bác sĩ
-          </h1>
-        </div>
+      <section className="flex min-h-screen items-center justify-center bg-slate-50 py-16 dark:bg-slate-800">
+        <h2 className="font-bold text-gray-900 text-xl sm:text-2xl dark:text-white">
+          Không tìm thấy thông tin bác sĩ
+        </h2>
       </section>
     );
   }
+
+  const profile = doctor.doctorProfile;
+  const specialty =
+    profile?.primarySpecialization || profile?.specialty?.title || "Tổng quát";
+  const address = profile?.hospitalAddress || "Chưa cập nhật địa chỉ";
+  const fee = profile?.hourlyWage ?? 15000;
+  const profilePicture = profile?.profilePicture || DEFAULT_AVATAR;
 
   return (
     <section className="min-h-screen bg-slate-50 pt-16 pb-40 sm:pt-24 dark:bg-slate-800">
@@ -35,7 +46,7 @@ export default function DoctorPage() {
               </h1>
               <div className="mt-1.5 flex items-center gap-2 text-[10px] text-gray-500 uppercase sm:mt-2 sm:text-xs dark:text-gray-400">
                 <Stethoscope className="h-3 w-3 sm:h-4 sm:w-4" />
-                {doctor.speciality}
+                {profile?.operationMode || specialty}
               </div>
               <div className="mt-1.5 flex items-center gap-1 text-xs text-yellow-500 sm:mt-2 sm:text-sm">
                 <Star className="h-3 w-3 fill-current sm:h-4 sm:w-4" />
@@ -46,17 +57,15 @@ export default function DoctorPage() {
               </div>
               <div className="mt-1.5 flex items-center gap-2 text-gray-500 text-xs sm:mt-2 sm:text-sm dark:text-gray-400">
                 <MapPin className="h-3 w-3 flex-shrink-0 sm:h-4 sm:w-4" />
-                <span>
-                  {doctor.address.line1}, {doctor.address.line2}
-                </span>
+                <span>{address}</span>
               </div>
             </div>
             <div className="flex-shrink-0">
               <Image
-                alt={doctor.name}
+                alt={doctor.name || "Bác sĩ"}
                 className="h-24 w-24 rounded-full object-cover sm:h-36 sm:w-36"
                 height={207}
-                src={doctor.image}
+                src={profilePicture}
                 width={243}
               />
             </div>
@@ -67,7 +76,7 @@ export default function DoctorPage() {
         </div>
       </div>
 
-      <FixedBookButton fees={doctor.fees} />
+      <FixedBookButton dateLabel={getFormattedShortDate()} fees={fee} />
     </section>
   );
 }

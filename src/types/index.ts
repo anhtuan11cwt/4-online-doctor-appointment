@@ -1,3 +1,58 @@
+export type DoctorProfileAvailability = {
+  monday: string[];
+  tuesday: string[];
+  wednesday: string[];
+  thursday: string[];
+  friday: string[];
+  saturday: string[];
+  sunday: string[];
+};
+
+export type DoctorProfile = {
+  accomplishments: string[];
+  availability: DoctorProfileAvailability | null;
+  bio: string | null;
+  gender: string;
+  hospitalAddress: string | null;
+  hospitalName: string | null;
+  hoursOfOperation: string | null;
+  hourlyWage: number;
+  insuranceAccepted: string | null;
+  languagesSpoken: string[];
+  operationMode: string | null;
+  otherSpecialties: string[];
+  primarySpecialization: string | null;
+  profilePicture: string | null;
+  servicesOffered: string[];
+  yearsOfExperience: number | null;
+};
+
+export type Doctor = {
+  doctorProfile: DoctorProfile | null;
+  email: string | null;
+  id: string;
+  name: string | null;
+  phone: string | null;
+  slug: string;
+};
+
+export type DoctorProfileDetail = DoctorProfile & {
+  educationHistory: string | null;
+  email: string | null;
+  firstName: string;
+  lastName: string;
+  medicalLicense: string | null;
+  middleName: string | null;
+  phone: string | null;
+  publishedWork: string | null;
+  service: { title: string } | null;
+  specialty: { title: string } | null;
+};
+
+export type DoctorDetail = Omit<Doctor, "doctorProfile"> & {
+  doctorProfile: DoctorProfileDetail | null;
+};
+
 export type DoctorProfileSummary = {
   hospitalAddress: string | null;
   hourlyWage: number;

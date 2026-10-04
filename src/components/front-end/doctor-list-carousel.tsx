@@ -2,14 +2,14 @@
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useRef } from "react";
-import type { DoctorWithProfile } from "@/types";
+import type { Doctor } from "@/types";
 import DoctorCard from "./doctor-card";
 
 export default function DoctorListCarousel({
   doctors,
   isInPerson = false,
 }: {
-  doctors: DoctorWithProfile[];
+  doctors: Doctor[];
   isInPerson?: boolean;
 }) {
   const scrollRef = useRef<HTMLDivElement>(null);

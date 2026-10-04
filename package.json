@@ -54,6 +54,8 @@
   "name": "4-online-doctor-appointment",
   "private": true,
   "scripts": {
+    "backfill:availability": "node scripts/backfill-availability.js",
+    "backfill:slugs": "node scripts/backfill-slugs.js",
     "biome:check": "biome check --write .",
     "biome:check:unsafe": "biome check --write --unsafe .",
     "biome:ci": "biome ci .",

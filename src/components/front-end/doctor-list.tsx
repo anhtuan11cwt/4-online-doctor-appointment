@@ -2,7 +2,7 @@
 
 import { ArrowUpRight, Map as MapIcon } from "lucide-react";
 import Link from "next/link";
-import type { DoctorWithProfile } from "@/types";
+import type { Doctor } from "@/types";
 import DoctorListCarousel from "./doctor-list-carousel";
 import SectionHeading from "./section-heading";
 import ToggleButton from "./toggle-button";
@@ -14,7 +14,7 @@ export default function DoctorsList({
   className = "bg-slate-50",
 }: {
   className?: string;
-  doctors?: DoctorWithProfile[];
+  doctors?: Doctor[];
   isInPerson?: boolean;
   title?: string;
 }) {

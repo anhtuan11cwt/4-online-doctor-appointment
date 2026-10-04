@@ -3,6 +3,7 @@
 import bcrypt from "bcrypt";
 import nodemailer from "nodemailer";
 import { prisma } from "@/lib/db";
+import { generateSlug } from "@/lib/generate-slug";
 import { onboardingSchemas, registerSchema } from "@/lib/validations";
 
 const transporter = nodemailer.createTransport({
@@ -245,6 +246,7 @@ export async function createUser(data: unknown) {
         phone,
         plan: plan || null,
         role: role?.toUpperCase() === "DOCTOR" ? "DOCTOR" : "USER",
+        slug: generateSlug(fullName),
         token,
       },
     });

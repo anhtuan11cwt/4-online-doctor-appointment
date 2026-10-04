@@ -6,12 +6,20 @@ import Brands from "@/components/front-end/brands";
 import DoctorsList from "@/components/front-end/doctor-list";
 import Hero from "@/components/front-end/hero";
 import TabbedItems from "@/components/front-end/tabbed-items";
+import { getTodayDayKey } from "@/lib/date";
+import type { Doctor } from "@/types";
 
 const BOTH_MODE = "Cả khám từ xa và khám trực tiếp";
 const IN_PERSON_MODE = "Khám trực tiếp";
 const TELEHEALTH_MODE = "Khám từ xa";
 
 export const dynamic = "force-dynamic";
+
+function hasAvailabilityToday(doctor: Doctor) {
+  const today = getTodayDayKey();
+  const times = doctor.doctorProfile?.availability?.[today];
+  return Boolean(times && times.length > 0);
+}
 
 export default async function HomePage() {
   const [services, specialties, symptoms, doctors] = await Promise.all([
@@ -21,12 +29,14 @@ export default async function HomePage() {
     getDoctors(),
   ]);
 
-  const telehealthDoctors = doctors.filter((doctor) => {
+  const availableDoctors = doctors.filter(hasAvailabilityToday);
+
+  const telehealthDoctors = availableDoctors.filter((doctor) => {
     const mode = doctor.doctorProfile?.operationMode;
     return mode === TELEHEALTH_MODE || mode === BOTH_MODE;
   });
 
-  const inPersonDoctors = doctors.filter((doctor) => {
+  const inPersonDoctors = availableDoctors.filter((doctor) => {
     const mode = doctor.doctorProfile?.operationMode;
     return mode === IN_PERSON_MODE || mode === BOTH_MODE;
   });

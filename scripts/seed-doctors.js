@@ -1,9 +1,22 @@
 const bcrypt = require("bcrypt");
 const { PrismaClient } = require("@prisma/client");
+const { generateSlug } = require("./lib/slug");
 
 const prisma = new PrismaClient();
 
 const PASSWORD = "password";
+
+const DAYS = [
+  "monday",
+  "tuesday",
+  "wednesday",
+  "thursday",
+  "friday",
+  "saturday",
+  "sunday",
+];
+
+const DEFAULT_TIMES = ["7", "8", "9", "10", "11", "12", "1", "2", "3", "4"];
 
 const legacyEmails = [
   "lucas.doctor@example.com",
@@ -106,6 +119,7 @@ async function main() {
         password: passwordHash,
         phone: doctor.phone,
         role: "DOCTOR",
+        slug: generateSlug(doctor.name),
       },
       update: {
         isVerified: true,
@@ -113,11 +127,12 @@ async function main() {
         onboardingPage: "{}",
         phone: doctor.phone,
         role: "DOCTOR",
+        slug: generateSlug(doctor.name),
       },
       where: { email: doctor.email },
     });
 
-    const profile = await prisma.doctorProfile.findUnique({
+    let profile = await prisma.doctorProfile.findUnique({
       where: { userId: user.id },
     });
 
@@ -150,7 +165,7 @@ async function main() {
       });
       console.log(`Đã cập nhật ${doctor.name} (${doctor.email})`);
     } else {
-      await prisma.doctorProfile.create({
+      profile = await prisma.doctorProfile.create({
         data: {
           ...profileData,
           trackingNumber: `TRK-${doctor.email.split("@")[0].toUpperCase()}`,
@@ -158,6 +173,33 @@ async function main() {
         },
       });
       console.log(`Đã tạo ${doctor.name} (${doctor.email})`);
+    }
+
+    const existingAvailability = await prisma.availability.findUnique({
+      where: { doctorProfileId: profile.id },
+    });
+
+    const availabilityData = { doctorProfileId: profile.id };
+    let hasEmptyDay = false;
+
+    for (const day of DAYS) {
+      const current = existingAvailability?.[day];
+      if (!current || current.length === 0) {
+        availabilityData[day] = DEFAULT_TIMES;
+        hasEmptyDay = true;
+      }
+    }
+
+    if (hasEmptyDay) {
+      if (existingAvailability) {
+        await prisma.availability.update({
+          data: availabilityData,
+          where: { doctorProfileId: profile.id },
+        });
+      } else {
+        await prisma.availability.create({ data: availabilityData });
+      }
+      console.log(`Đã thêm lịch làm việc cho ${doctor.name}`);
     }
   }
 }
