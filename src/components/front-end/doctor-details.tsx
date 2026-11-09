@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import type { DoctorDetail } from "@/types";
 import Availability from "./availability";
 
 function ServiceDetails() {
   return (
-    <div className="px-4 py-4 sm:px-8 sm:py-6">
+    <div className="px-3 py-4 sm:px-8 sm:py-6 min-[360px]:px-4">
       <h3 className="mb-3 font-semibold text-base text-gray-900 sm:mb-4 sm:text-lg dark:text-white">
         Chi tiết dịch vụ
       </h3>
@@ -41,15 +42,15 @@ function ServiceDetails() {
   );
 }
 
-export default function DoctorDetails() {
+export default function DoctorDetails({ doctor }: { doctor: DoctorDetail }) {
   const [isActive, setIsActive] = useState("availability");
 
   return (
     <div>
-      <div className="bg-blue-600 px-4 sm:px-8">
-        <div className="flex items-center">
+      <div className="bg-blue-600 px-3 sm:px-8 min-[360px]:px-4">
+        <div className="flex items-stretch">
           <button
-            className={`w-full border px-3 py-3 font-medium text-xs uppercase tracking-widest transition-colors sm:px-8 sm:py-4 sm:text-sm ${
+            className={`w-full border px-2 py-3 font-medium text-[10px] uppercase tracking-tight transition-colors sm:px-8 sm:py-4 sm:text-sm min-[360px]:px-4 min-[360px]:text-xs min-[360px]:tracking-widest ${
               isActive === "details"
                 ? "border-blue-600 bg-white text-blue-600 dark:bg-slate-100"
                 : "border-transparent bg-blue-600 text-white"
@@ -60,7 +61,7 @@ export default function DoctorDetails() {
             Chi tiết dịch vụ
           </button>
           <button
-            className={`w-full border px-3 py-3 font-medium text-xs uppercase tracking-widest transition-colors sm:px-8 sm:py-4 sm:text-sm ${
+            className={`w-full border px-2 py-3 font-medium text-[10px] uppercase tracking-tight transition-colors sm:px-8 sm:py-4 sm:text-sm min-[360px]:px-4 min-[360px]:text-xs min-[360px]:tracking-widest ${
               isActive === "availability"
                 ? "border-blue-600 bg-white text-blue-600 dark:bg-slate-100"
                 : "border-transparent bg-blue-600 text-white"
@@ -73,7 +74,11 @@ export default function DoctorDetails() {
         </div>
       </div>
 
-      {isActive === "availability" ? <Availability /> : <ServiceDetails />}
+      {isActive === "availability" ? (
+        <Availability doctor={doctor} />
+      ) : (
+        <ServiceDetails />
+      )}
     </div>
   );
 }

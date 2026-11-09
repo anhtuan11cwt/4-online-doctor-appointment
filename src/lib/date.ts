@@ -1,14 +1,5 @@
+import { getDayName } from "@/lib/utils";
 import type { DoctorProfileAvailability } from "@/types";
-
-const DAYS_OF_WEEK: (keyof DoctorProfileAvailability)[] = [
-  "sunday",
-  "monday",
-  "tuesday",
-  "wednesday",
-  "thursday",
-  "friday",
-  "saturday",
-];
 
 const DAY_LABELS: Record<keyof DoctorProfileAvailability, string> = {
   friday: "Thứ Sáu",
@@ -38,7 +29,7 @@ const MONTH_LABELS = [
 export function getTodayDayKey(
   date: Date = new Date(),
 ): keyof DoctorProfileAvailability {
-  return DAYS_OF_WEEK[date.getDay()];
+  return getDayName(date);
 }
 
 export function getDayLabel(dayKey: keyof DoctorProfileAvailability): string {

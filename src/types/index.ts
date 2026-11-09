@@ -67,6 +67,24 @@ export type DoctorWithProfile = {
   name: string | null;
 };
 
+export type AppointmentProps = {
+  appointmentDate?: string;
+  appointmentReason: string;
+  appointmentTime?: string;
+  charge?: number;
+  dob?: Date | null;
+  doctorId?: string;
+  doctorName?: string | null;
+  email: string;
+  firstName: string;
+  gender: string;
+  lastName: string;
+  location: string;
+  medicalDocuments?: string[];
+  occupation: string;
+  phone: string;
+};
+
 export type ServiceProps = {
   imageUrl: string | null;
   slug: string;

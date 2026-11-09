@@ -9,6 +9,7 @@ cloudinary.config({
 export const CLOUDINARY_FOLDERS = {
   additionalDocs: "4-online-doctor-appointment/additional-docs",
   doctorProfile: "4-online-doctor-appointment/doctor-profile",
+  patientMedicalFiles: "4-online-doctor-appointment/patient-medical-files",
   serviceImage: "4-online-doctor-appointment/service-image",
 } as const;
 

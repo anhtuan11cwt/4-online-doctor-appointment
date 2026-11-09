@@ -2,8 +2,6 @@ import { MapPin, Star, Stethoscope } from "lucide-react";
 import Image from "next/image";
 import { getDoctorBySlug } from "@/actions/doctors";
 import DoctorDetails from "@/components/front-end/doctor-details";
-import FixedBookButton from "@/components/front-end/fixed-book-button";
-import { getFormattedShortDate } from "@/lib/date";
 
 const DEFAULT_AVATAR = "/profile_pic.png";
 
@@ -31,17 +29,16 @@ export default async function DoctorPage({
   const specialty =
     profile?.primarySpecialization || profile?.specialty?.title || "Tổng quát";
   const address = profile?.hospitalAddress || "Chưa cập nhật địa chỉ";
-  const fee = profile?.hourlyWage ?? 15000;
   const profilePicture = profile?.profilePicture || DEFAULT_AVATAR;
 
   return (
-    <section className="min-h-screen bg-slate-50 pt-16 pb-40 sm:pt-24 dark:bg-slate-800">
+    <section className="min-h-screen bg-slate-50 pt-16 pb-10 sm:pt-24 sm:pb-16 dark:bg-slate-800">
       <div className="mx-auto max-w-4xl px-3 sm:px-4">
         <div className="rounded-md bg-white py-8 shadow-lg dark:border dark:border-slate-600 dark:bg-slate-950">
-          {/* Doctor Header */}
-          <div className="flex flex-col items-start justify-between gap-4 border-gray-200 border-b px-4 py-4 sm:flex-row sm:items-center sm:gap-6 sm:px-8 sm:py-6 dark:border-gray-700">
-            <div className="flex-1">
-              <h1 className="font-bold text-gray-900 text-lg uppercase tracking-wide sm:text-2xl dark:text-white">
+          {/* Đầu trang bác sĩ */}
+          <div className="flex flex-col items-start justify-between gap-4 border-gray-200 border-b px-3 py-4 sm:flex-row sm:items-center sm:gap-6 sm:px-8 sm:py-6 min-[360px]:px-4 dark:border-gray-700">
+            <div className="min-w-0 flex-1">
+              <h1 className="break-words font-bold text-gray-900 text-lg uppercase tracking-wide sm:text-2xl dark:text-white">
                 {doctor.name}
               </h1>
               <div className="mt-1.5 flex items-center gap-2 text-[10px] text-gray-500 uppercase sm:mt-2 sm:text-xs dark:text-gray-400">
@@ -57,7 +54,7 @@ export default async function DoctorPage({
               </div>
               <div className="mt-1.5 flex items-center gap-2 text-gray-500 text-xs sm:mt-2 sm:text-sm dark:text-gray-400">
                 <MapPin className="h-3 w-3 flex-shrink-0 sm:h-4 sm:w-4" />
-                <span>{address}</span>
+                <span className="min-w-0 break-words">{address}</span>
               </div>
             </div>
             <div className="flex-shrink-0">
@@ -71,12 +68,10 @@ export default async function DoctorPage({
             </div>
           </div>
 
-          {/* Doctor Details Tabs */}
-          <DoctorDetails />
+          {/* Các thẻ nội dung chi tiết */}
+          <DoctorDetails doctor={doctor} />
         </div>
       </div>
-
-      <FixedBookButton dateLabel={getFormattedShortDate()} fees={fee} />
     </section>
   );
 }

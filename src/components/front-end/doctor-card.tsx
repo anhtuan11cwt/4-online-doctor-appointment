@@ -4,15 +4,11 @@ import { Clock, MapPin, Stethoscope, Video } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { timesArray } from "@/config/constants";
-import { getFormattedShortDate, getTodayDayKey } from "@/lib/date";
+import { getFormattedShortDate } from "@/lib/date";
+import { getDayName, getTimeLabel } from "@/lib/utils";
 import type { Doctor } from "@/types";
 
 const DEFAULT_AVATAR = "/profile_pic.png";
-
-function getTimeLabel(time: string) {
-  return timesArray.find((item) => item.value === time)?.label ?? time;
-}
 
 export default function DoctorCard({
   doctor,
@@ -30,7 +26,7 @@ export default function DoctorCard({
   const address = profile?.hospitalAddress || "Chưa cập nhật địa chỉ";
   const fee = profile?.hourlyWage ?? 15000;
 
-  const today = getTodayDayKey();
+  const today = getDayName();
   const times = profile?.availability?.[today] ?? [];
 
   return (

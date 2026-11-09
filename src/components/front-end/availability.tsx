@@ -1,67 +1,19 @@
 "use client";
 
 import { vi } from "date-fns/locale";
-import { useMemo, useState, useSyncExternalStore } from "react";
+import { MoveRight } from "lucide-react";
+import { useState, useSyncExternalStore } from "react";
+import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-
-const timeSlots = [
-  "9:00 AM",
-  "9:15 AM",
-  "9:30 AM",
-  "9:45 AM",
-  "10:00 AM",
-  "10:15 AM",
-  "10:30 AM",
-  "10:45 AM",
-  "11:00 AM",
-  "11:15 AM",
-  "2:00 PM",
-  "2:15 PM",
-  "2:30 PM",
-  "2:45 PM",
-  "3:00 PM",
-];
-
-const vietnameseDays: Record<string, string> = {
-  Fri: "T6",
-  Mon: "T2",
-  Sat: "T7",
-  Sun: "CN",
-  Thu: "T5",
-  Tue: "T3",
-  Wed: "T4",
-};
-
-const vietnameseMonths: Record<string, string> = {
-  Apr: "Th04",
-  Aug: "Th08",
-  Dec: "Th12",
-  Feb: "Th02",
-  Jan: "Th01",
-  Jul: "Th07",
-  Jun: "Th06",
-  Mar: "Th03",
-  May: "Th05",
-  Nov: "Th11",
-  Oct: "Th10",
-  Sep: "Th09",
-};
+import { getDayFromDate, getLongDate, getTimeLabel } from "@/lib/utils";
+import type { DoctorDetail } from "@/types";
+import BookingForm from "./booking-form";
 
 let _clientDate: Date | undefined;
 
 function getClientDate() {
   if (!_clientDate) _clientDate = new Date();
   return _clientDate;
-}
-
-function parseTimeToMinutes(time: string): number {
-  const [timePart, period] = time.split(" ");
-  const [hoursStr, minutesStr] = timePart.split(":");
-  const minutes = Number(minutesStr);
-  let hours = Number(hoursStr);
-  if (period === "PM" && hours !== 12) hours += 12;
-  if (period === "AM" && hours === 12) hours = 0;
-  return hours * 60 + minutes;
 }
 
 function isDateInPast(date: Date, today: Date): boolean {
@@ -72,130 +24,134 @@ function isDateInPast(date: Date, today: Date): boolean {
   return compare < todayStart;
 }
 
-export default function Availability() {
+const SKELETON_SLOTS = ["1", "2", "3", "4", "5", "6", "7", "8"];
+
+function TimeSkeleton() {
+  return (
+    <div className="px-3 py-4 sm:px-8 sm:py-6 min-[360px]:px-4">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <div className="h-[300px] w-full animate-pulse rounded-md border bg-gray-100 dark:bg-slate-700" />
+        <div>
+          <div className="mb-4 h-[48px] animate-pulse rounded border bg-gray-100 dark:bg-slate-700" />
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+            {SKELETON_SLOTS.map((slot) => (
+              <div
+                className="h-[36px] animate-pulse rounded-md border bg-gray-100 dark:bg-slate-700"
+                key={slot}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function Availability({ doctor }: { doctor: DoctorDetail }) {
   const clientDate = useSyncExternalStore(
     () => () => {},
     getClientDate,
     () => undefined as Date | undefined,
   );
-  const [bookDate, setBookDate] = useState<Date | undefined>(clientDate);
+  const [pickedDate, setPickedDate] = useState<Date | undefined>(undefined);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
+  const [step, setStep] = useState(1);
 
-  const today = useMemo(() => new Date(), []);
+  const date = pickedDate ?? clientDate;
+  const dayKey = getDayFromDate(date);
+  const times = dayKey
+    ? (doctor.doctorProfile?.availability?.[dayKey] ?? [])
+    : [];
+  const fee = doctor.doctorProfile?.hourlyWage ?? 15000;
 
-  const isToday = useMemo(() => {
-    if (!bookDate) return false;
-    return (
-      bookDate.getDate() === today.getDate() &&
-      bookDate.getMonth() === today.getMonth() &&
-      bookDate.getFullYear() === today.getFullYear()
-    );
-  }, [bookDate, today]);
-
-  const availableTimeSlots = useMemo(() => {
-    if (!isToday) return timeSlots;
-
-    const now = new Date();
-    const currentMinutes = now.getHours() * 60 + now.getMinutes();
-
-    return timeSlots.filter((time) => {
-      const slotMinutes = parseTimeToMinutes(time);
-      return slotMinutes > currentMinutes;
-    });
-  }, [isToday]);
-
-  const formatDate = (date: Date): string => {
-    const dateStr = date.toString();
-    const parts = dateStr.split(" ");
-    const dayEN = parts[0];
-    const monthEN = parts[1];
-    const dateNum = parts[2];
-    const dayVN = vietnameseDays[dayEN] || dayEN;
-    const monthVN = vietnameseMonths[monthEN] || monthEN;
-    const gmtParts = dateStr.split("GMT");
-    const gmtOffset = gmtParts[1]?.split(" ")[0] || "";
-    return `${dayVN}, ${dateNum}/${monthVN} GMT${gmtOffset}`;
-  };
-
-  const handleDateSelect = (date: Date | undefined) => {
-    setBookDate(date);
+  const handleDateSelect = (nextDate: Date | undefined) => {
+    setPickedDate(nextDate);
     setSelectedTime(null);
   };
 
-  if (!clientDate) {
+  if (step > 1) {
     return (
-      <div className="mb-[100px] px-4 py-4 sm:px-8 sm:py-6">
-        <h2 className="mb-4 font-bold text-lg text-slate-700 sm:text-xl dark:text-white">
-          Chọn ngày và giờ
-        </h2>
-        <div className="grid grid-cols-2 gap-4">
-          <div className="col-span-2 sm:col-span-1">
-            <div className="h-[300px] w-[280px] animate-pulse rounded-md border bg-gray-100 dark:bg-slate-700" />
-          </div>
-          <div className="col-span-2 sm:col-span-1">
-            <div className="mb-4 h-[48px] animate-pulse rounded border bg-gray-100 dark:bg-slate-700" />
-            <div className="grid grid-cols-2 gap-3">
-              {timeSlots.map((time) => (
-                <div
-                  className="h-[36px] animate-pulse rounded-md border bg-gray-100 dark:bg-slate-700"
-                  key={time}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
+      <BookingForm
+        date={date}
+        doctor={doctor}
+        onStepChange={setStep}
+        selectedTime={selectedTime}
+        step={step}
+      />
     );
   }
 
-  return (
-    <div className="mb-[100px] px-4 py-4 sm:px-8 sm:py-6">
-      <h2 className="mb-4 font-bold text-lg text-slate-700 sm:text-xl dark:text-white">
-        Chọn ngày và giờ
-      </h2>
+  if (!clientDate || !date) {
+    return <TimeSkeleton />;
+  }
 
-      <div className="grid grid-cols-2 gap-4">
-        <div className="col-span-2 sm:col-span-1">
+  return (
+    <div className="px-3 py-4 sm:px-8 sm:py-6 min-[360px]:px-4">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        {/* Chọn ngày */}
+        <div className="rounded-md border bg-white p-2 min-[360px]:p-3 dark:border-gray-700 dark:bg-slate-800">
           <Calendar
-            className="rounded-md border dark:border-gray-700"
-            disabled={(date) => isDateInPast(date, today)}
+            className="mx-auto max-w-full"
+            disabled={(day) => isDateInPast(day, clientDate)}
             locale={vi}
             mode="single"
             onSelect={handleDateSelect}
-            selected={bookDate}
+            selected={date}
           />
         </div>
 
-        <div className="col-span-2 sm:col-span-1">
-          {bookDate && (
-            <div className="mb-4 border border-blue-500 px-4 py-3 text-center dark:bg-slate-800">
-              <p className="font-bold text-slate-700 text-sm uppercase tracking-wider dark:text-white">
-                {formatDate(bookDate)}
+        {/* Chọn giờ */}
+        <div className="min-w-0">
+          <span className="text-[10px] text-muted-foreground uppercase tracking-wider min-[360px]:text-xs">
+            Bạn đã chọn
+          </span>
+          <h2 className="mt-1 break-words font-semibold text-base sm:text-xl">
+            {getLongDate(date)}
+            {selectedTime ? ` · ${getTimeLabel(selectedTime)}` : ""}
+          </h2>
+
+          <div className="mt-3 min-[360px]:mt-4">
+            {times.length > 0 ? (
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 min-[360px]:gap-3">
+                {times.map((time) => (
+                  <Button
+                    className="w-full px-1 text-xs min-[360px]:px-2.5 min-[360px]:text-sm"
+                    key={time}
+                    onClick={() => setSelectedTime(time)}
+                    type="button"
+                    variant={selectedTime === time ? "default" : "outline"}
+                  >
+                    {getTimeLabel(time)}
+                  </Button>
+                ))}
+              </div>
+            ) : (
+              <p className="rounded-md border border-dashed p-3 text-center text-muted-foreground text-xs min-[360px]:p-4 min-[360px]:text-sm dark:border-gray-600">
+                Bác sĩ chưa có lịch làm việc vào ngày này. Vui lòng chọn ngày
+                khác.
               </p>
-            </div>
-          )}
+            )}
+          </div>
 
-          {isToday && availableTimeSlots.length === 0 && (
-            <p className="mb-4 text-center text-gray-500 text-sm dark:text-gray-400">
-              Không có khung giờ khả dụng cho hôm nay. Vui lòng chọn ngày khác.
-            </p>
-          )}
-
-          <div className="grid grid-cols-2 gap-3">
-            {availableTimeSlots.map((time) => (
-              <button
-                className={`rounded-md border px-3 py-2 font-medium text-xs transition-colors sm:text-sm ${
-                  selectedTime === time
-                    ? "border-blue-600 bg-blue-600 text-white"
-                    : "border-gray-200 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white dark:border-gray-600 dark:bg-slate-700 dark:text-blue-400 dark:hover:bg-blue-600"
-                }`}
-                key={time}
-                onClick={() => setSelectedTime(time)}
+          {/* Giá khám và nút đặt lịch */}
+          <div className="mt-4 rounded-md border p-3 min-[360px]:mt-6 min-[360px]:p-4 dark:border-gray-700">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="font-semibold text-base sm:text-lg">
+                  {fee.toLocaleString("vi-VN")}đ
+                </p>
+                <p className="text-muted-foreground text-xs">mỗi lần khám</p>
+              </div>
+              <Button
+                className="w-full gap-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 sm:w-auto"
+                disabled={!selectedTime}
+                onClick={() => setStep((current) => current + 1)}
                 type="button"
               >
-                {time}
-              </button>
-            ))}
+                Đặt lịch
+                <MoveRight className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </div>
       </div>

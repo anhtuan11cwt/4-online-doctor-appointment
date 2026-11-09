@@ -166,26 +166,31 @@ export default function MultipleFileUpload({
 
       <div
         className={cn(
-          "flex gap-2",
+          "flex flex-col gap-2 min-[400px]:flex-row",
           disabled && "pointer-events-none opacity-50",
         )}
       >
         <button
           className={cn(
-            "flex flex-1 items-center justify-center gap-2 rounded-md border-2 border-dashed p-4 transition-colors hover:border-teal-500 hover:bg-teal-50",
+            "flex flex-1 items-center justify-center gap-2 rounded-md border-2 border-dashed p-3 text-center transition-colors hover:border-teal-500 hover:bg-teal-50 min-[360px]:p-4",
             files.length + pendingFiles.length >= maxFiles &&
               "pointer-events-none opacity-50",
           )}
           onClick={() => fileInputRef.current?.click()}
           type="button"
         >
-          <Upload className="size-5 text-muted-foreground" />
-          <span className="text-muted-foreground text-sm">
+          <Upload className="size-5 shrink-0 text-muted-foreground" />
+          <span className="text-muted-foreground text-xs min-[360px]:text-sm">
             {`Tải lên file PDF (tối đa ${maxFiles} file)`}
           </span>
         </button>
         {(files.length > 0 || pendingFiles.length > 0) && (
-          <Button onClick={handleChangeAll} type="button" variant="outline">
+          <Button
+            className="w-full min-[400px]:w-auto"
+            onClick={handleChangeAll}
+            type="button"
+            variant="outline"
+          >
             Xóa tất cả
           </Button>
         )}
@@ -196,10 +201,14 @@ export default function MultipleFileUpload({
 
 export async function uploadPendingFiles(
   pendingFiles: PendingFile[],
+  folder?: string,
 ): Promise<UploadedFile[]> {
   const uploadPromises = pendingFiles.map(async (pending) => {
     const formData = new FormData();
     formData.append("file", pending.file);
+    if (folder) {
+      formData.append("folder", folder);
+    }
 
     const response = await fetch("/api/upload", {
       body: formData,
